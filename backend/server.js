@@ -25,6 +25,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/menu', require('./routes/menu')); // ✅ Added this line for menu route
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -42,6 +43,7 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',
+      menu: '/api/menu',
       health: '/api/health'
     }
   });
@@ -50,8 +52,7 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  
-  // Mongoose validation error
+
   if (err.name === 'ValidationError') {
     const errors = Object.values(err.errors).map(e => ({
       field: e.path,
@@ -64,7 +65,6 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Mongoose duplicate key error
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue)[0];
     return res.status(400).json({
@@ -73,7 +73,6 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // JWT errors
   if (err.name === 'JsonWebTokenError') {
     return res.status(401).json({
       success: false,
@@ -88,7 +87,6 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Default error
   res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Internal Server Error'

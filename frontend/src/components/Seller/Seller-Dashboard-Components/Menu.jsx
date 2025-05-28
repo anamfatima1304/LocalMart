@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./Menu.css"; // Import the external CSS file
 
 function Menu() {
   const [menuForm, setMenuForm] = useState({
@@ -188,30 +189,28 @@ function Menu() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="menu-container">
       {/* Notification */}
       {notification.show && (
-        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-          notification.isSuccess ? 'bg-green-500' : 'bg-red-500'
-        } text-white`}>
+        <div className={`notification ${notification.isSuccess ? 'success' : 'error'}`}>
           {notification.message}
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Menu Management</h1>
-          <p className="text-gray-600">Add, edit, or remove items from your menu.</p>
+      <div className="menu-content">
+        <div className="menu-header">
+          <h1 className="menu-title">Menu Management</h1>
+          <p className="menu-subtitle">Add, edit, or remove items from your menu.</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-xl font-semibold mb-4">
+        <div className="menu-form-section">
+          <h3 className="form-title">
             {editingId ? 'Edit Menu Item' : 'Add New Menu Item'}
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label htmlFor="itemName" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="itemName" className="form-label">
                 Item Name:
               </label>
               <input
@@ -222,12 +221,12 @@ function Menu() {
                 onChange={handleMenuFormChange}
                 required
                 placeholder="e.g. Chicken Biryani"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input"
               />
             </div>
             
-            <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="form-group">
+              <label htmlFor="price" className="form-label">
                 Price (Rs):
               </label>
               <input
@@ -240,13 +239,13 @@ function Menu() {
                 placeholder="e.g. 350"
                 min="0"
                 step="0.01"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input"
               />
             </div>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="form-group" style={{ marginBottom: '1rem' }}>
+            <label htmlFor="category" className="form-label">
               Category:
             </label>
             <select
@@ -255,7 +254,7 @@ function Menu() {
               value={menuForm.category}
               onChange={handleMenuFormChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-select"
             >
               <option value="">Select a category</option>
               <option value="main">Main Course</option>
@@ -265,8 +264,8 @@ function Menu() {
             </select>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="form-group" style={{ marginBottom: '1rem' }}>
+            <label htmlFor="description" className="form-label">
               Description:
             </label>
             <textarea
@@ -276,32 +275,21 @@ function Menu() {
               onChange={handleMenuFormChange}
               rows="3"
               placeholder="Describe your item here..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-textarea"
             />
           </div>
 
-          <div className="mb-6">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="availability"
-                checked={menuForm.availability}
-                onChange={handleMenuFormChange}
-                className="mr-2"
-              />
-              <span className="text-sm font-medium text-gray-700">Item is available</span>
-            </label>
-          </div>
+          
 
-          <div className="flex gap-3">
+          <div className="button-group">
             <button
               onClick={saveMenuItem}
               disabled={loading.type === "saveMenu"}
-              className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200"
+              className="btn btn-primary"
             >
               {loading.type === "saveMenu" ? (
-                <span className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <span>
+                  <div className="spinner"></div>
                   Saving...
                 </span>
               ) : (
@@ -312,7 +300,7 @@ function Menu() {
             {editingId && (
               <button
                 onClick={cancelEdit}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200"
+                className="btn btn-secondary"
               >
                 Cancel
               </button>
@@ -320,53 +308,51 @@ function Menu() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold mb-4">Current Menu Items</h3>
+        <div className="menu-items">
+          <h3 className="menu-items-title">Current Menu Items</h3>
           
           {menuItems.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No menu items added yet. Add your first item above!</p>
+            <p className="empty-state">No menu items added yet. Add your first item above!</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+            <div className="table-container">
+              <table className="menu-table">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Item Name</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Price</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Category</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Availability</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
+                  <tr>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Availability</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {menuItems.map((item) => (
-                    <tr key={item._id} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">{item.itemName}</td>
-                      <td className="py-3 px-4">Rs. {item.price}</td>
-                      <td className="py-3 px-4">{getCategoryDisplay(item.category)}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          item.availability 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
+                    <tr key={item._id}>
+                      <td>{item.itemName}</td>
+                      <td>Rs. {item.price}</td>
+                      <td>{getCategoryDisplay(item.category)}</td>
+                      <td>
+                        <span className={`status-badge ${
+                          item.availability ? 'status-available' : 'status-unavailable'
                         }`}>
                           {item.availability ? "Available" : "Not Available"}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="flex gap-2">
+                      <td>
+                        <div className="action-buttons">
                           <button
                             onClick={() => editMenuItem(item)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-200"
+                            className="btn btn-primary btn-sm"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => deleteMenuItem(item._id, item.itemName)}
                             disabled={loading.type === "delete" && loading.id === item._id}
-                            className="bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-200"
+                            className="btn btn-danger btn-sm"
                           >
                             {loading.type === "delete" && loading.id === item._id ? (
-                              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                              <div className="spinner spinner-sm"></div>
                             ) : (
                               "Remove"
                             )}

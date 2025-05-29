@@ -1,6 +1,6 @@
 import React from "react";
 import { Heart, Search, Filter, Star, MapPin } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css"; // Import Font Awesome
 import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
@@ -12,9 +12,10 @@ import NotificationsComponent from "./buyer-dashboard/NotificationsComponent";
 import BuyerSettings from "./buyer-dashboard/BuyerSettings";
 import FavoriteSection from "./buyer-dashboard/FavoriteSection";
 import DashboardContent from "./buyer-dashboard/DashboardContent";
+import authService from "../../services/authService"; // Add this import
 
 // Sidebar Component
-function Sidebar({ activeMenu, setActiveMenu }) {
+function Sidebar({ activeMenu, setActiveMenu, userName }) { // Add userName prop
   const menuItems = [
     { name: "Dashboard", icon: "fa-tachometer-alt" },
     { name: "Explore Shops", icon: "fa-store" },
@@ -27,7 +28,9 @@ function Sidebar({ activeMenu, setActiveMenu }) {
   return (
     <aside className="buyer-sidebar">
       <div className="buyer-sidebar-brand">
-        <span className="buyer-navbar-brand">LocalMart</span>
+        <span className="buyer-navbar-brand">
+          Welcome, {userName || 'User'}! {/* Display dynamic username */}
+        </span>
       </div>
       <ul className="buyer-sidebar-menu">
         {menuItems.map((item, index) => (
@@ -55,8 +58,7 @@ function Sidebar({ activeMenu, setActiveMenu }) {
           onClick={(e) => {
             e.preventDefault();
             if (window.confirm("Are you sure you want to logout?")) {
-              localStorage.clear();
-              sessionStorage.clear();
+              authService.logout(); // Use authService logout method
               window.location.href = "/login";
             }
           }}
@@ -102,6 +104,32 @@ function Footer() {
 
 function BuyerDashboard() {
   const [activeMenu, setActiveMenu] = useState("Dashboard");
+  const [userName, setUserName] = useState(""); // Add state for username
+  const [loading, setLoading] = useState(true); // Add loading state
+
+  // Get username from database on component mount
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        setLoading(true);
+        const currentUser = await authService.getCurrentUser();
+        if (currentUser && currentUser.name) {
+          setUserName(currentUser.name);
+        }
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+        // Fallback to localStorage if API call fails
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (storedUser && storedUser.name) {
+          setUserName(storedUser.name);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserName();
+  }, []);
 
   const renderContent = () => {
     switch (activeMenu) {
@@ -117,17 +145,40 @@ function BuyerDashboard() {
         return <FavoriteSection />;
       case "Dashboard":
       default:
-        return <DashboardContent />;
+        return <DashboardContent userName={userName} />; {/* Pass userName to DashboardContent */}
     }
   };
+
+  // Show loading screen while fetching user data
+  if (loading) {
+    return (
+      <div className="buyer-app-container">
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          fontSize: '18px',
+          color: '#666'
+        }}>
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="buyer-app-container">
       <div className="buyer-main-container">
-        <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+        <Sidebar 
+          activeMenu={activeMenu} 
+          setActiveMenu={setActiveMenu} 
+          userName={userName} // Pass username to Sidebar
+        />
         <div className="buyer-content-area">{renderContent()}</div>
       </div>
     </div>
   );
 }
+
 export default BuyerDashboard;

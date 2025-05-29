@@ -1,18 +1,23 @@
 // routes/auth.js
 const express = require('express');
 const { body } = require('express-validator');
+const router = express.Router();
+
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { authenticate } = require('../middleware/auth');
 const {
   register,
   login,
   getProfile,
   updateProfile,
   changePassword
-} = require('../controllers/authController.js');
-const { authenticate } = require('../middleware/auth');
+} = require('../controllers/authController');
 
-const router = express.Router();
-
-// Validation rules
+// =====================
+// 🛡️ Validations
+// =====================
 const registerValidation = [
   body('name')
     .trim()
@@ -58,8 +63,12 @@ const changePasswordValidation = [
     .withMessage('New password must contain at least one uppercase letter, one lowercase letter, and one number')
 ];
 
+// =====================
+// 🔐 Auth Routes
+// =====================
+
 // @route   POST /api/auth/register
-// @desc    Register a new user
+// @desc    Register user
 // @access  Public
 router.post('/register', registerValidation, register);
 
@@ -82,5 +91,37 @@ router.put('/profile', authenticate, updateProfile);
 // @desc    Change user password
 // @access  Private
 router.put('/change-password', authenticate, changePasswordValidation, changePassword);
+
+// Legacy fallback route for /me if needed
+router.get('/me', authenticate, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        userType: user.userType,
+        phone: user.phone,
+        address: user.address
+      }
+    });
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
 
 module.exports = router;

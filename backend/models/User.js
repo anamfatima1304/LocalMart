@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Name is required'],
     trim: true,
-    maxLength: [50, 'Name cannot exceed 50 characters']
+    maxlength: [50, 'Name cannot exceed 50 characters']
   },
   email: {
     type: String,
@@ -22,8 +22,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Password is required'],
-    minLength: [6, 'Password must be at least 6 characters'],
-    select: false // Don't include password in queries by default
+    minlength: [6, 'Password must be at least 6 characters'],
+    select: false // Do not include password in query results
   },
   userType: {
     type: String,
@@ -31,15 +31,19 @@ const userSchema = new mongoose.Schema({
     required: [true, 'User type is required'],
     default: 'buyer'
   },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  profileImage: {
+  phone: {
     type: String,
-    default: null
+    required: false, // Optional in the new structure
+    match: [/^[\+]?[\d\s\-\(\)]+$/, 'Please add a valid phone number']
   },
-  // Seller-specific fields
+  phoneNumber: {
+    type: String,
+    trim: true
+  },
+  address: {
+    type: mongoose.Schema.Types.Mixed, // Can support both string or object
+    required: false
+  },
   businessName: {
     type: String,
     trim: true
@@ -48,29 +52,22 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  // Buyer-specific fields
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String
-  },
-  phoneNumber: {
+  profileImage: {
     type: String,
-    trim: true
+    default: null
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
 }, {
-  timestamps: true
+  timestamps: true // Automatically includes createdAt and updatedAt
 });
 
-// Hash password before saving
+// Hash password before save
 userSchema.pre('save', async function(next) {
-  // Only hash the password if it has been modified (or is new)
   if (!this.isModified('password')) return next();
-  
   try {
-    // Hash password with cost of 12
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
     next();
@@ -79,12 +76,12 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Instance method to check password
+// Compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Instance method to get public profile
+// Remove password from output
 userSchema.methods.toJSON = function() {
   const user = this.toObject();
   delete user.password;

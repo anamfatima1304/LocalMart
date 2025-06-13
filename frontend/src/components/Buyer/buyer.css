@@ -702,6 +702,15 @@
       font-size: 0.9rem;
       font-weight: 500;
   }
+
+  buyer-shops-count2{
+    background-color: #f8fafc;
+      color: #f8fafc;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+  }
   
   /* Filter and Search Styles */
   .buyer-filter-search-container {
@@ -2361,7 +2370,8 @@
     overflow-x: hidden;
   }
   .buyer-favorite-section-wrapper {
-    max-width: 100%;
+    margin-left: 280px;
+    max-width: 80%;
     overflow-x: hidden; /* Prevent horizontal scroll */
     box-sizing: border-box;
   }

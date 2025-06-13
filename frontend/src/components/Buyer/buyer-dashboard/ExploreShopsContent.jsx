@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Heart, Search, Filter, Star, MapPin, ShoppingCart, Plus, Minus, X } from 'lucide-react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../buyer.css';
@@ -18,11 +19,83 @@ const shopImages = [
     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop',
     'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=300&fit=crop',
     'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
     'https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&h=300&fit=crop',
     'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
     'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=400&h=300&fit=crop'
 ];
+
+// USER-SPECIFIC FAVORITES MANAGEMENT FUNCTIONS
+const getCurrentUserId = () => {
+    // Option 1: If you store user info in localStorage
+    const user = localStorage.getItem('user');
+    if (user) {
+        const userData = JSON.parse(user);
+        return userData.id || userData._id || userData.userId;
+    }
+    
+    // Option 2: If you store just the user ID
+    return localStorage.getItem('userId');
+    
+    // Option 3: If you use a different auth system, adjust accordingly
+    // return sessionStorage.getItem('userId');
+    // return getCurrentUser()?.id; // if using a context or auth hook
+};
+
+const getFavorites = () => {
+    const userId = getCurrentUserId();
+    if (!userId) return [];
+    
+    const favoritesKey = `favoriteShops_${userId}`;
+    const favorites = localStorage.getItem(favoritesKey);
+    return favorites ? JSON.parse(favorites) : [];
+};
+
+const saveFavorites = (favorites) => {
+    const userId = getCurrentUserId();
+    if (!userId) return;
+    
+    const favoritesKey = `favoriteShops_${userId}`;
+    localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+};
+
+const addToFavorites = (shop) => {
+    const userId = getCurrentUserId();
+    if (!userId) {
+        console.warn('No user logged in');
+        return false;
+    }
+    
+    const favorites = getFavorites();
+    const isAlreadyFavorite = favorites.some(fav => fav.id === shop.id);
+    
+    if (!isAlreadyFavorite) {
+        const favoriteShop = {
+            id: shop.id,
+            name: shop.name,
+            description: shop.businessAddress,
+            image: shopImages[Math.floor(Math.random() * shopImages.length)],
+            rating: shop.rating,
+            category: Object.keys(shop.mainCategory)[0] || 'General',
+            totalItems: shop.totalItems,
+            deliveryTime: shop.deliveryTime
+        };
+        const updatedFavorites = [...favorites, favoriteShop];
+        saveFavorites(updatedFavorites);
+        return true;
+    }
+    return false;
+};
+
+const removeFromFavorites = (shopId) => {
+    const favorites = getFavorites();
+    const updatedFavorites = favorites.filter(fav => fav.id !== shopId);
+    saveFavorites(updatedFavorites);
+};
+
+const isShopFavorite = (shopId) => {
+    const favorites = getFavorites();
+    return favorites.some(fav => fav.id === shopId);
+};
 
 function OrderReceipt({ cart, shopName, onClose, onConfirmOrder }) {
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -89,28 +162,31 @@ function MenuItem({ item, onUpdateCart, cartQuantity }) {
             </div>
             
             {item.availability && (
-                <div className="quantity-controls">
-                    <button 
-                        onClick={handleDecrement}
-                        className="quantity-btn"
-                        disabled={cartQuantity === 0}
-                    >
-                        <Minus size={16} />
-                    </button>
-                    <span className="quantity-display">{cartQuantity}</span>
-                    <button 
-                        onClick={handleIncrement}
-                        className="quantity-btn"
-                    >
-                        <Plus size={16} />
-                    </button>
-                </div>
-            )}
+    <div className="buyer-cart-item-quantity-section">
+        <div className="buyer-quantity-controls">
+            <button 
+                onClick={handleDecrement}
+                className="buyer-quantity-btn"
+                disabled={cartQuantity === 0}
+            >
+                <i className="fa-solid fa-minus"></i>
+            </button>
+            <span className="buyer-quantity-display">{cartQuantity}</span>
+            <button 
+                onClick={handleIncrement}
+                className="buyer-quantity-btn"
+            >
+                <i className="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </div>
+)}
+
         </div>
     );
 }
 
-function ShopCard({ shop }) {
+function ShopCard({ shop, onFavoriteUpdate }) {
     const [isFavorite, setIsFavorite] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [cart, setCart] = useState([]);
@@ -119,9 +195,90 @@ function ShopCard({ shop }) {
     // Get random image for shop
     const shopImage = shopImages[Math.floor(Math.random() * shopImages.length)];
     
+    // Check if shop is favorite on component mount
+    useEffect(() => {
+        setIsFavorite(isShopFavorite(shop.id));
+    }, [shop.id]);
+
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
-        setIsFavorite(!isFavorite);
+        
+        const userId = getCurrentUserId();
+        if (!userId) {
+            // Show login required message
+            const notification = document.createElement('div');
+            notification.className = 'favorite-notification';
+            notification.textContent = 'Please log in to add favorites!';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ef4444;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+            return;
+        }
+        
+        if (isFavorite) {
+            // Remove from favorites
+            removeFromFavorites(shop.id);
+            setIsFavorite(false);
+            if (onFavoriteUpdate) onFavoriteUpdate();
+            
+            // Show removed message
+            const notification = document.createElement('div');
+            notification.className = 'favorite-notification';
+            notification.textContent = `${shop.name} removed from favorites!`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ef4444;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        } else {
+            // Add to favorites
+            const success = addToFavorites(shop);
+            if (success) {
+                setIsFavorite(true);
+                if (onFavoriteUpdate) onFavoriteUpdate();
+                // Show success message
+                const notification = document.createElement('div');
+                notification.className = 'favorite-notification';
+                notification.textContent = `${shop.name} added to favorites!`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #10b981;
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease-out;
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
     };
 
     const handleUpdateCart = (item, quantity) => {
@@ -187,6 +344,7 @@ function ShopCard({ shop }) {
                     <div 
                         onClick={handleFavoriteClick}
                         className="buyer-shop-favorite"
+                        title={isFavorite ? "Remove from favorites" : "Add to favorites"}
                     >
                         <Heart 
                             className="buyer-favorite-icon" 
@@ -329,22 +487,33 @@ function ExploreShopsContent() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [categories, setCategories] = useState([{ name: 'All', count: 0 }]);
+    const [favoriteUpdateTrigger, setFavoriteUpdateTrigger] = useState(0);
+
+    const location = useLocation();
+    const shopRefs = useRef({});
 
     useEffect(() => {
         fetchShops();
     }, []);
 
+    useEffect(() => {
+        const scrollToShopId = location.state?.scrollToShopId;
+        if (scrollToShopId && shopRefs.current[scrollToShopId]) {
+            shopRefs.current[scrollToShopId].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [location.state, shops]);
+
     const fetchShops = async () => {
         try {
             setLoading(true);
             const response = await fetch('http://localhost:5000/api/shops');
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch shops');
             }
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 setShops(result.data);
                 generateCategories(result.data);
@@ -381,20 +550,23 @@ function ExploreShopsContent() {
         setCategories(categoryList);
     };
 
-    // Filter shops based on search and category
+    const handleFavoriteUpdate = () => {
+        setFavoriteUpdateTrigger(prev => prev + 1);
+    };
+
     const filteredShops = shops.filter(shop => {
         const matchesSearch = shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            shop.businessAddress.toLowerCase().includes(searchTerm.toLowerCase());
-        
+            shop.businessAddress.toLowerCase().includes(searchTerm.toLowerCase());
+
         if (selectedCategory === 'All') {
             return matchesSearch;
         }
-        
-        const matchesCategory = shop.mainCategory && 
-                              Object.keys(shop.mainCategory).some(cat => 
-                                  cat.toLowerCase() === selectedCategory.toLowerCase()
-                              );
-        
+
+        const matchesCategory = shop.mainCategory &&
+            Object.keys(shop.mainCategory).some(cat =>
+                cat.toLowerCase() === selectedCategory.toLowerCase()
+            );
+
         return matchesSearch && matchesCategory;
     });
 
@@ -422,7 +594,7 @@ function ExploreShopsContent() {
             </div>
         );
     }
-    
+
     return (
         <div className="buyer-explore-content">
             <div className="buyer-explore-header">
@@ -434,21 +606,29 @@ function ExploreShopsContent() {
                     <span className="buyer-shops-count">{filteredShops.length} shops found</span>
                 </div>
             </div>
-            
-            <FilterSearch 
+
+            <FilterSearch
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 selectedCategory={selectedCategory}
                 setSelectedCategory={setSelectedCategory}
                 categories={categories}
             />
-            
+
             <div className="buyer-shops-grid">
                 {filteredShops.map((shop) => (
-                    <ShopCard key={shop.id} shop={shop} />
+                    <div
+                        key={shop.id}
+                        ref={el => shopRefs.current[shop.id] = el}
+                    >
+                        <ShopCard
+                            shop={shop}
+                            onFavoriteUpdate={handleFavoriteUpdate}
+                        />
+                    </div>
                 ))}
             </div>
-            
+
             {filteredShops.length === 0 && !loading && (
                 <div className="buyer-no-results">
                     <i className="fa-solid fa-search buyer-no-results-icon"></i>

@@ -76,8 +76,8 @@ const OrderSchema = new mongoose.Schema({
   }
 });
 
-// Generate order number
-OrderSchema.pre('save', async function(next) {
+// Generate order number BEFORE validation to avoid required error
+OrderSchema.pre('validate', async function(next) {
   if (!this.orderNumber) {
     const count = await mongoose.model('Order').countDocuments();
     this.orderNumber = `ORD${String(count + 1).padStart(6, '0')}`;

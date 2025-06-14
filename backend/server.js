@@ -27,7 +27,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/menu', require('./routes/menu')); // ✅ Added this line for menu route
 app.use('/api/shops', require('./routes/shops')); // ✅ Added shops route
+// app.use('/api/orders', require('./routes/orders'));
 app.use('/api/orders', require('./routes/orders'));
+
 
 // Health check route
 app.get('/api/health', (req, res) => {

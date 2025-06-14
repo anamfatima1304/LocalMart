@@ -515,7 +515,7 @@ function ShopCard({ shop, onFavoriteUpdate }) {
         </div>
 
         <div className="menu-footer">
-            <button onClick={handleAddToCart} className="order-summary-btn" style={{ backgroundColor: '#10b981' }}>
+            <button onClick={handleAddToCart} className="order-summary-btn" style={{ backgroundColor: '#faa500' }}>
                 <i className="fa-solid fa-cart-plus"></i> Add to Cart
             </button>
         </div>

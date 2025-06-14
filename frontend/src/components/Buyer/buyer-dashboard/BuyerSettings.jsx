@@ -1,54 +1,116 @@
-import React from 'react';
-import { Heart, Search, Filter, Star, MapPin } from 'lucide-react';
-import { useState } from 'react';
-import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome
-import TimePicker from 'react-time-picker';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
-import '../buyer.css'
+import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
+import authService from '../../../services/authService';
+import '../buyer.css';
 
 function BuyerSettings() {
-  const [form, setForm] = useState({
-    username: 'ahmed_123',
-    email: 'ahmed@example.com',
-    password: 'password123',
-    street: 'House 12, Main Road',
-    city: 'Islamabad',
-    postalCode: '44000',
-    country: 'Pakistan'
+  const [form, setForm] = useState({ name: '', email: '' });
+  const [tempForm, setTempForm] = useState({ name: '', email: '' });
+  const [editMode, setEditMode] = useState(false);
+  const [passwordMode, setPasswordMode] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
 
-  const [editMode, setEditMode] = useState(false);
-  const [tempForm, setTempForm] = useState({ ...form });
+  const [loading, setLoading] = useState(true);
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  });
+  
 
   const handleChange = (field, value) => {
     setTempForm(prev => ({ ...prev, [field]: value }));
   };
 
+  const handlePasswordChange = (field, value) => {
+    setPasswordForm(prev => ({ ...prev, [field]: value }));
+  };
+
   const validateEmail = email =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSave = () => {
-    const requiredFields = ['username', 'email', 'password', 'street', 'city', 'postalCode', 'country'];
+  const fetchUserData = async () => {
+    try {
+      const res = await authService.getProfile();
+      setForm(res.data.user || {});
+      setTempForm(res.data.user || {});
+    } catch (err) {
+      Swal.fire('Error', 'Failed to fetch user profile', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    for (let field of requiredFields) {
-      if (!tempForm[field].trim()) {
-        return alert(`Please fill out the ${field} field.`);
-      }
+  const handleSave = async () => {
+    if (!tempForm.name.trim() || !tempForm.email.trim()) {
+      return Swal.fire('Validation Error', 'Name and email are required.', 'warning');
     }
 
     if (!validateEmail(tempForm.email)) {
-      return alert('Invalid email format.');
+      return Swal.fire('Validation Error', 'Invalid email format.', 'warning');
     }
 
-    if (tempForm.password.length < 6) {
-      return alert('Password must be at least 6 characters.');
-    }
+    try {
+      const res = await authService.updateProfile({
+        name: tempForm.name,
+        email: tempForm.email,
+      });
+      setForm(res.data.user);
+      setTempForm(res.data.user);
+      setEditMode(false);
 
-    setForm(tempForm);
-    setEditMode(false);
-    alert('Account settings updated successfully!');
+      await Swal.fire({
+        icon: 'success',
+        title: 'Profile Updated!',
+        text: 'Your account information was updated successfully.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      window.location.reload();
+    } catch (err) {
+      Swal.fire('Error', 'Failed to update profile', 'error');
+    }
   };
+
+  const handlePasswordSubmit = async () => {
+    const { currentPassword, newPassword, confirmPassword } = passwordForm;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return Swal.fire('Validation Error', 'All password fields are required.', 'warning');
+    }
+
+    if (newPassword !== confirmPassword) {
+      return Swal.fire('Mismatch', 'New password and confirmation do not match.', 'warning');
+    }
+
+    try {
+      await authService.changePassword({ currentPassword, newPassword });
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Password Changed!',
+        text: 'Your password has been updated successfully.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setPasswordMode(false);
+    } catch (err) {
+      Swal.fire('Error', err.message || 'Password change failed.', 'error');
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="buyer-settings-page">
@@ -60,11 +122,11 @@ function BuyerSettings() {
         {editMode ? (
           <>
             <div className="buyer-settings-row">
-              <label>Username:</label>
+              <label>Name:</label>
               <input
                 type="text"
-                value={tempForm.username}
-                onChange={e => handleChange('username', e.target.value)}
+                value={tempForm.name}
+                onChange={e => handleChange('name', e.target.value)}
               />
             </div>
             <div className="buyer-settings-row">
@@ -75,48 +137,6 @@ function BuyerSettings() {
                 onChange={e => handleChange('email', e.target.value)}
               />
             </div>
-            <div className="buyer-settings-row">
-              <label>Password:</label>
-              <input
-                type="password"
-                value={tempForm.password}
-                onChange={e => handleChange('password', e.target.value)}
-              />
-            </div>
-
-            <h3>Address</h3>
-            <div className="buyer-settings-row">
-              <label>Street:</label>
-              <input
-                type="text"
-                value={tempForm.street}
-                onChange={e => handleChange('street', e.target.value)}
-              />
-            </div>
-            <div className="buyer-settings-row">
-              <label>City:</label>
-              <input
-                type="text"
-                value={tempForm.city}
-                onChange={e => handleChange('city', e.target.value)}
-              />
-            </div>
-            <div className="buyer-settings-row">
-              <label>Postal Code:</label>
-              <input
-                type="text"
-                value={tempForm.postalCode}
-                onChange={e => handleChange('postalCode', e.target.value)}
-              />
-            </div>
-            <div className="buyer-settings-row">
-              <label>Country:</label>
-              <input
-                type="text"
-                value={tempForm.country}
-                onChange={e => handleChange('country', e.target.value)}
-              />
-            </div>
 
             <div className="buyer-action-buttons">
               <button className="buyer-btn-save" onClick={handleSave}>Save</button>
@@ -125,26 +145,55 @@ function BuyerSettings() {
           </>
         ) : (
           <>
-            <div className="buyer-settings-row"><label>Username:</label><span>{form.username}</span></div>
+            <div className="buyer-settings-row"><label>Name:</label><span>{form.name}</span></div>
             <div className="buyer-settings-row"><label>Email:</label><span>{form.email}</span></div>
-            <div className="buyer-settings-row"><label>Password:</label><span>{"*".repeat(form.password.length)}</span></div>
-            <h3>Address</h3>
-            <div className="buyer-settings-row"><label>Street:</label><span>{form.street}</span></div>
-            <div className="buyer-settings-row"><label>City:</label><span>{form.city}</span></div>
-            <div className="buyer-settings-row"><label>Postal Code:</label><span>{form.postalCode}</span></div>
-            <div className="buyer-settings-row"><label>Country:</label><span>{form.country}</span></div>
+            <div className="buyer-settings-row"><label>Password:</label><span>********</span></div>
 
             <button className="buyer-btn-edit" onClick={() => setEditMode(true)}>Edit Info</button>
+            <button className="buyer-btn-edit" onClick={() => setPasswordMode(!passwordMode)}>Change Password</button>
           </>
+        )}
+
+        {passwordMode && (
+          <div className="buyer-settings-password-section">
+            <h3>Change Password</h3>
+
+            <div className="buyer-settings-row">
+              <label>Current Password:</label>
+              <input
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={e => handlePasswordChange('currentPassword', e.target.value)}
+              />
+            </div>
+
+            <div className="buyer-settings-row">
+              <label>New Password:</label>
+              <input
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={e => handlePasswordChange('newPassword', e.target.value)}
+              />
+            </div>
+
+            <div className="buyer-settings-row">
+              <label>Confirm Password:</label>
+              <input
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={e => handlePasswordChange('confirmPassword', e.target.value)}
+              />
+            </div>
+
+            <div className="buyer-action-buttons">
+              <button className="buyer-btn-save" onClick={handlePasswordSubmit}>Update Password</button>
+              <button className="buyer-btn-cancel" onClick={() => setPasswordMode(false)}>Cancel</button>
+            </div>
+          </div>
         )}
       </div>
     </div>
   );
 }
-
-
-
-
-
 
 export default BuyerSettings;

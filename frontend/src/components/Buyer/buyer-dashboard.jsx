@@ -21,7 +21,7 @@ function Sidebar({ activeMenu, setActiveMenu, userName }) { // Add userName prop
     { name: "Explore Shops", icon: "fa-store" },
     { name: "My Cart", icon: "fa-shopping-cart" },
     { name: "Favorites", icon: "fa-heart" },
-    { name: "Notifications", icon: "fa-bell" },
+    // { name: "Notifications", icon: "fa-bell" },
     { name: "Settings", icon: "fa-cog" },
   ];
 

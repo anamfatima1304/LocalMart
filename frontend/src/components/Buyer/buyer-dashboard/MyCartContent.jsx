@@ -16,13 +16,26 @@ const getCurrentUserId = () => {
 };
 
 // Helper: Get cart for current user
+// const getUserCartItems = () => {
+//     const userId = getCurrentUserId();
+//     if (!userId) return [];
+//     const storedCart = localStorage.getItem(`cart_${userId}`);
+//     return storedCart ? JSON.parse(storedCart) : [];
+// };
+
 const getUserCartItems = () => {
     const userId = getCurrentUserId();
-    if (!userId) return [];
     const storedCart = localStorage.getItem(`cart_${userId}`);
-    return storedCart ? JSON.parse(storedCart) : [];
-};
-
+    try {
+      const parsed = storedCart ? JSON.parse(storedCart) : [];
+      console.log('📦 Loaded Cart Items:', parsed); // 👈 Add this
+      return parsed;
+    } catch (e) {
+      console.error('❌ Failed to parse cart:', e);
+      return [];
+    }
+  };
+  
 // Order Summary Component
 function OrderSummary({ items }) {
     const subtotal = items.filter(item => item.availability !== false).reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -77,12 +90,12 @@ function CartItem({ item, onQuantityChange, onRemove }) {
 
     return (
         <div className={`cart-item ${item.availability === false ? 'out-of-stock' : ''}`}>
-            <div className="buyer-cart-item-image">
+            {/* <div className="buyer-cart-item-image">
                 <img src={item.image || getRandomImage()} alt={item.itemName} />
                 {item.availability === false && (
                     <div className="buyer-out-of-stock-overlay">Out of Stock</div>
                 )}
-            </div>
+            </div> */}
 
             <button className="buyer-cart-item-remove" onClick={handleRemove}>
                 <i className="fa-solid fa-trash"></i>
@@ -91,7 +104,7 @@ function CartItem({ item, onQuantityChange, onRemove }) {
             <div className="buyer-cart-item-details">
                 <div className="buyer-cart-item-basic-info">
                     <h3 className="buyer-cart-item-name">{item.itemName}</h3>
-                    <p className="buyer-cart-item-seller">From: {item.sellerName || 'Shop'}</p>
+                    <p className="buyer-cart-item-seller">From: {item.shopName || 'Shop'}</p>
                     <span className="buyer-cart-item-category">{item.category}</span>
                     <div className="buyer-cart-item-rating">
                         <Star className="buyer-star-icon" fill="#fbbf24" color="#fbbf24" size={14} />

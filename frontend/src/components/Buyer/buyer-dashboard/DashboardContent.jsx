@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
+import MyCartContent from "./MyCartContent";
 import '../buyer.css'
 
 
@@ -232,7 +233,7 @@ function DashboardContent() {
                     </div>
                 </div>
             </div>
-            <div className="buyer-category-section">
+            {/* <div className="buyer-category-section">
                 <div className="buyer-section-header">
                     <h2 className="buyer-section-title">Shop by Category</h2>
                     <a href="#" className="buyer-view-all">View All</a>
@@ -242,7 +243,7 @@ function DashboardContent() {
                         <CategoryCard key={index} category={category} />
                     ))}
                 </div>
-            </div>
+            </div> */}
             <div className="buyer-seller-section">
                 <div className="buyer-section-header">
                     <h2 className="buyer-section-title">Featured Sellers</h2>
@@ -254,7 +255,7 @@ function DashboardContent() {
                     ))}
                 </div>
             </div>
-           <div><RecentOrders /></div>
+           {/* <div><RecentOrders /></div> */}
         </div>
     );
 }

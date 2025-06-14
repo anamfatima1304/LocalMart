@@ -29,7 +29,8 @@ function Sidebar({ activeMenu, setActiveMenu, userName }) { // Add userName prop
     <aside className="buyer-sidebar">
       <div className="buyer-sidebar-brand">
         <span className="buyer-navbar-brand">
-          Welcome, {userName || 'User'}! {/* Display dynamic username */}
+        Welcome
+          {/* Welcome, {userName || 'User'}!  */}
         </span>
       </div>
       <ul className="buyer-sidebar-menu">

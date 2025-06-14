@@ -1,9 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import TimePicker from 'react-time-picker';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
 
 // Helper: Get current user ID
 const getCurrentUserId = () => {
@@ -16,26 +13,19 @@ const getCurrentUserId = () => {
 };
 
 // Helper: Get cart for current user
-// const getUserCartItems = () => {
-//     const userId = getCurrentUserId();
-//     if (!userId) return [];
-//     const storedCart = localStorage.getItem(`cart_${userId}`);
-//     return storedCart ? JSON.parse(storedCart) : [];
-// };
-
 const getUserCartItems = () => {
     const userId = getCurrentUserId();
     const storedCart = localStorage.getItem(`cart_${userId}`);
     try {
       const parsed = storedCart ? JSON.parse(storedCart) : [];
-      console.log('📦 Loaded Cart Items:', parsed); // 👈 Add this
+      console.log('📦 Loaded Cart Items:', parsed);
       return parsed;
     } catch (e) {
       console.error('❌ Failed to parse cart:', e);
       return [];
     }
   };
-  
+
 // Order Summary Component
 function OrderSummary({ items }) {
     const subtotal = items.filter(item => item.availability !== false).reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -63,9 +53,8 @@ function OrderSummary({ items }) {
     );
 }
 
-
 // Cart Item Component
-function CartItem({ item, onQuantityChange, onRemove }) {
+function CartItem({ item, onQuantityChange, onRemove, onPlaceOrder }) {
     const handleQuantityChange = (newQuantity) => {
         if (newQuantity >= 1) {
             onQuantityChange(item._id, newQuantity);
@@ -74,6 +63,10 @@ function CartItem({ item, onQuantityChange, onRemove }) {
 
     const handleRemove = () => {
         onRemove(item._id);
+    };
+
+    const handlePlaceOrder = () => {
+        onPlaceOrder(item);
     };
 
     const getRandomImage = () => {
@@ -89,76 +82,115 @@ function CartItem({ item, onQuantityChange, onRemove }) {
     };
 
     return (
-        <div className={`cart-item ${item.availability === false ? 'out-of-stock' : ''}`}>
-            {/* <div className="buyer-cart-item-image">
-                <img src={item.image || getRandomImage()} alt={item.itemName} />
-                {item.availability === false && (
-                    <div className="buyer-out-of-stock-overlay">Out of Stock</div>
-                )}
-            </div> */}
+        <div className={`cart-item ${item.availability === false ? 'out-of-stock' : ''}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1, marginRight: '1rem' }}>
+                <button className="buyer-cart-item-remove" onClick={handleRemove} style={{ float: 'right', marginBottom: '0.5rem' }}>
+                    <i className="fa-solid fa-trash"></i>
+                </button>
 
-            <button className="buyer-cart-item-remove" onClick={handleRemove}>
-                <i className="fa-solid fa-trash"></i>
-            </button>
-
-            <div className="buyer-cart-item-details">
-                <div className="buyer-cart-item-basic-info">
-                    <h3 className="buyer-cart-item-name">{item.itemName}</h3>
-                    <p className="buyer-cart-item-seller">From: {item.shopName || 'Shop'}</p>
-                    <span className="buyer-cart-item-category">{item.category}</span>
-                    <div className="buyer-cart-item-rating">
-                        <Star className="buyer-star-icon" fill="#fbbf24" color="#fbbf24" size={14} />
-                        <span className="buyer-rating-value">{item.rating || 4.0}</span>
-                        <span className="buyer-rating-reviews">({item.reviews || 10})</span>
-                    </div>
-                </div>
-
-                <div className="buyer-cart-item-price-section">
-                    <div className="buyer-cart-item-price">
-                        <span className="buyer-current-price">Rs {item.price}</span>
-                    </div>
-                </div>
-
-                <div className="buyer-cart-item-quantity-section">
-                    <div className="buyer-quantity-controls">
-                        <button 
-                            className="buyer-quantity-btn"
-                            onClick={() => handleQuantityChange(item.quantity - 1)}
-                            disabled={item.availability === false}
-                        >
-                            <i className="fa-solid fa-minus"></i>
-                        </button>
-                        <span className="buyer-quantity-display">{item.quantity}</span>
-                        <button 
-                            className="buyer-quantity-btn"
-                            onClick={() => handleQuantityChange(item.quantity + 1)}
-                            disabled={item.availability === false}
-                        >
-                            <i className="fa-solid fa-plus"></i>
-                        </button>
-                    </div>
-                    {item.availability === false && (
-                        <div className="buyer-stock-status">
-                            <i className="fa-solid fa-exclamation-triangle"></i>
-                            <span>Out of stock</span>
+                <div className="buyer-cart-item-details">
+                    <div className="buyer-cart-item-basic-info">
+                        <h3 className="buyer-cart-item-name">{item.itemName}</h3>
+                        <p className="buyer-cart-item-seller">From: {item.shopName || 'Shop'}</p>
+                        <span className="buyer-cart-item-category">{item.category}</span>
+                        <div className="buyer-cart-item-rating">
+                            <Star className="buyer-star-icon" fill="#fbbf24" color="#fbbf24" size={14} />
+                            <span className="buyer-rating-value">{item.rating || 4.0}</span>
+                            <span className="buyer-rating-reviews">({item.reviews || 10})</span>
                         </div>
-                    )}
-                </div>
+                    </div>
 
-                <div className="buyer-cart-item-total-section">
-                    <div className="buyer-item-total">
-                        <span className="buyer-total-label">Total</span>
-                        <span className="buyer-total-price">Rs {item.price * item.quantity}</span>
+                    <div className="buyer-cart-item-price-section" style={{ marginTop: '0.5rem' }}>
+                        <div className="buyer-cart-item-price">
+                            <span className="buyer-current-price">Rs {item.price}</span>
+                        </div>
+                    </div>
+
+                    <div className="buyer-cart-item-quantity-section" style={{ marginTop: '0.5rem' }}>
+                        <div className="buyer-quantity-controls">
+                            <button 
+                                className="buyer-quantity-btn"
+                                onClick={() => handleQuantityChange(item.quantity - 1)}
+                                disabled={item.availability === false}
+                            >
+                                <i className="fa-solid fa-minus"></i>
+                            </button>
+                            <span className="buyer-quantity-display">{item.quantity}</span>
+                            <button 
+                                className="buyer-quantity-btn"
+                                onClick={() => handleQuantityChange(item.quantity + 1)}
+                                disabled={item.availability === false}
+                            >
+                                <i className="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        {item.availability === false && (
+                            <div className="buyer-stock-status">
+                                <i className="fa-solid fa-exclamation-triangle"></i>
+                                <span>Out of stock</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="buyer-cart-item-total-section" style={{ marginTop: '0.5rem' }}>
+                        <div className="buyer-item-total">
+                            <span className="buyer-total-label">Total</span>
+                            <span className="buyer-total-price">Rs {item.price * item.quantity}</span>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div>
+                <button 
+                    className="buyer-place-order-btn"
+                    onClick={handlePlaceOrder}
+                    disabled={item.availability === false}
+                    style={{
+                        padding: '8px 16px',
+                        backgroundColor: '#3b82f6',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: item.availability === false ? 'not-allowed' : 'pointer',
+                        whiteSpace: 'nowrap'
+                    }}
+                >
+                    Place Order
+                </button>
             </div>
         </div>
     );
 }
 
-
 function MyCartContent() {
     const [cartItemsState, setCartItemsState] = useState(getUserCartItems());
+    const [shops, setShops] = useState([]);
+    const [loadingShops, setLoadingShops] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Fetch shops on mount
+    useEffect(() => {
+        const fetchShops = async () => {
+            setLoadingShops(true);
+            try {
+                const response = await fetch('http://localhost:5000/api/shops');
+                if (!response.ok) throw new Error('Failed to fetch shops');
+                const result = await response.json();
+                if (result.success) {
+                    setShops(result.data);
+                } else {
+                    throw new Error('API returned error');
+                }
+            } catch (err) {
+                setError(err.message);
+                console.error('Error fetching shops:', err);
+            } finally {
+                setLoadingShops(false);
+            }
+        };
+        fetchShops();
+    }, []);
 
     const updateUserCartStorage = (updatedItems) => {
         const userId = getCurrentUserId();
@@ -186,6 +218,58 @@ function MyCartContent() {
         setCartItemsState([]);
         if (userId) {
             localStorage.removeItem(`cart_${userId}`);
+        }
+    };
+
+    // Place order for single item, dynamically set sellerId based on shopId in item
+    const handlePlaceOrder = async (item) => {
+        const token = localStorage.getItem('token'); // JWT token
+        if (!token) {
+          alert("Please log in first.");
+          return;
+        }
+
+        // Find the shop from shops list matching item's shopId or shop._id
+        // Assuming item.shopId exists and matches shop._id
+        const shop = shops.find(s => s._id === item.shopId);
+
+        if (!shop) {
+          alert('Shop information not found for this item.');
+          return;
+        }
+
+        const orderData = {
+            sellerId: shop.id,
+            items: [{
+                menuItemId: item._id,
+                quantity: item.quantity
+            }],
+            deliveryAddress: "Chagda Hostel",  // Replace with real input if needed
+            phoneNumber: "N/A",
+            orderNotes: ""
+        };
+
+        try {
+          const res = await fetch("http://localhost:5000/api/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(orderData)
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            alert("Order stored successfully!");
+            console.log("Order:", data.data);
+          } else {
+            alert("Failed: " + data.message);
+            console.log(data);
+          }
+        } catch (err) {
+          console.error("Order error:", err);
+          alert("Something went wrong.");
         }
     };
 
@@ -229,8 +313,8 @@ function MyCartContent() {
                 </div>
             </div>
 
-            <div className="buyer-cart-layout">
-                <div className="buyer-cart-items-section">
+            <div className="buyer-cart-layout" style={{ display: 'flex', gap: '2rem' }}>
+                <div className="buyer-cart-items-section" style={{ flex: 2 }}>
                     {availableItems.length > 0 && (
                         <div className="buyer-available-items">
                             <h3 className="buyer-section-title">Available Items ({availableItems.length})</h3>
@@ -241,6 +325,7 @@ function MyCartContent() {
                                         item={item}
                                         onQuantityChange={handleQuantityChange}
                                         onRemove={handleRemoveItem}
+                                        onPlaceOrder={handlePlaceOrder}
                                     />
                                 ))}
                             </div>
@@ -256,6 +341,7 @@ function MyCartContent() {
                                         item={item}
                                         onQuantityChange={handleQuantityChange}
                                         onRemove={handleRemoveItem}
+                                        onPlaceOrder={handlePlaceOrder}
                                     />
                                 ))}
                             </div>
@@ -264,23 +350,19 @@ function MyCartContent() {
                 </div>
 
                 {availableItems.length > 0 && (
-                    <div className="buyer-cart-summary-section">
+                    <div className="buyer-cart-summary-section" style={{ flex: 1 }}>
                         <div className="buyer-summary-container">
                             <OrderSummary items={availableItems} />
                             <div className="buyer-checkout-section">
-                                <button className="buyer-checkout-btn">
-                                    <i className="fa-solid fa-lock"></i>
-                                    Proceed to Checkout
-                                </button>
-                                <div className="buyer-security-info">
-                                    <i className="fa-solid fa-shield-alt"></i>
-                                    <span>Your payment information is secure and encrypted</span>
-                                </div>
+                                {/* You can add global checkout button here if needed */}
                             </div>
                         </div>
                     </div>
                 )}
             </div>
+
+            {loadingShops && <p>Loading shops...</p>}
+            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
         </div>
     );
 }

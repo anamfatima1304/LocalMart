@@ -106,47 +106,6 @@ const isShopFavorite = (shopId) => {
     return favorites.some(fav => fav.id === shopId);
 };
 
-// function OrderReceipt({ cart, shopName, onClose, onConfirmOrder }) {
-//     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-//     return (
-//         <div className="receipt-overlay">
-//             <div className="receipt-modal">
-//                 <div className="receipt-header">
-//                     <h3>Order Summary - {shopName}</h3>
-//                     <button onClick={onClose} className="receipt-close-btn">
-//                         <X size={20} />
-//                     </button>
-//                 </div>
-                
-//                 <div className="receipt-items">
-//                     {cart.map((item) => (
-//                         <div key={item._id} className="receipt-item">
-//                             <div className="receipt-item-info">
-//                                 <span className="receipt-item-name">{item.itemName}</span>
-//                                 <span className="receipt-item-quantity">× {item.quantity}</span>
-//                             </div>
-//                             <span className="receipt-item-price">Rs {(item.price * item.quantity).toFixed(2)}</span>
-//                         </div>
-//                     ))}
-//                 </div>
-                
-//                 <div className="receipt-total">
-//                     <strong>Total:Rs {total.toFixed(2)}</strong>
-//                 </div>
-                
-//                 <div className="receipt-actions">
-//                     <button onClick={onClose} className="receipt-cancel-btn">Cancel</button>
-//                     <button onClick={onConfirmOrder} className="receipt-confirm-btn">
-//                         <ShoppingCart size={16} />
-//                         Confirm Order
-//                     </button>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
-
 function OrderReceipt({ cart, shopName, onClose, onConfirmOrder }) {
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -413,85 +372,6 @@ function ShopCard({ shop, onFavoriteUpdate }) {
     alert("Items added to your cart!");
 };
 
-    // const handleConfirmOrder = () => {
-    //     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    //     alert(`Order confirmed for ${shop.name}!\nTotal: ₹${total.toFixed(2)}\nItems: ${cart.length}`);
-    //     setCart([]);
-    //     setShowReceipt(false);
-    //     setShowMenu(false);
-    // };
-
-    // const handleConfirmOrder = async () => {
-    //     try {
-    //         const token = getAuthToken();
-    //         const userData = getUserData();
-            
-    //         if (!token || !userData) {
-    //             alert("Please log in to place an order.");
-    //             return;
-    //         }
-    
-    //         // Prepare order data according to your backend schema
-    //         // const orderData = {
-    //         //     sellerId: shop.ownerId || shop.sellerId, // Make sure this matches your shop data structure
-    //         //     items: cart.map(item => ({
-    //         //         menuItemId: item._id,
-    //         //         quantity: item.quantity
-    //         //     })),
-    //         //     deliveryAddress: userData.address || "Campus Address", // You might want to add an address input
-    //         //     phoneNumber: userData.phoneNumber || userData.phone || "N/A", // Adjust based on your user schema
-    //         //     orderNotes: "" // You can add a notes input field if needed
-    //         // };
-    //         const orderData = {
-    //             seller: shop.ownerId || shop.sellerId,   // note: changed key from sellerId to seller
-    //             items: cart.map(item => ({
-    //               menuItemId: item._id,
-    //               quantity: item.quantity
-    //             })),
-    //             deliveryAddress: userData.address || "Campus Address",
-    //             phoneNumber: userData.phoneNumber || userData.phone || "N/A",
-    //             orderNotes: ""
-    //           };
-              
-    //         // Make API call to create order
-    //         const response = await fetch('http://localhost:5000/api/orders', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Authorization': `Bearer ${token}`
-    //             },
-    //             body: JSON.stringify(orderData)
-    //         });
-    
-    //         const result = await response.json();
-    
-    //         if (result.success) {
-    //             // Order created successfully
-    //             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    //             alert(`Order placed successfully! 🎉\nOrder Number: ${result.data.orderNumber}\nTotal: ₹${total.toFixed(2)}\nEstimated Delivery: ${new Date(result.data.estimatedDeliveryTime).toLocaleTimeString()}`);
-                
-    //             // Clear cart and close modals
-    //             setCart([]);
-    //             setShowReceipt(false);
-    //             setShowMenu(false);
-                
-    //             // Optionally, you can also clear the cart from localStorage
-    //             const userId = getCurrentUserId();
-    //             if (userId) {
-    //                 const cartKey = `cart_${userId}`;
-    //                 localStorage.removeItem(cartKey);
-    //             }
-    //         } else {
-    //             // Handle error
-    //             alert(`Failed to place order: ${result.message}`);
-    //         }
-    
-    //     } catch (error) {
-    //         console.error('Error placing order:', error);
-    //         alert('Failed to place order. Please try again.');
-    //     }
-    // };
-
     const handleConfirmOrder = async () => {
         const token = localStorage.getItem('token'); // Your JWT token
         console.log(token);
@@ -501,12 +381,12 @@ function ShopCard({ shop, onFavoriteUpdate }) {
         }
 
         const orderData = {
-                sellerId: '6849cce9604487efe6e575f1',   // note: changed key from sellerId to seller
+                sellerId: shop.id,   // note: changed key from sellerId to seller
                 items: cart.map(item => ({
                   menuItemId: item._id,
                   quantity: item.quantity
                 })),
-                deliveryAddress: "Campus Address",
+                deliveryAddress: "Chagda Hostel",
                 phoneNumber: "N/A",
                 orderNotes: ""
               };

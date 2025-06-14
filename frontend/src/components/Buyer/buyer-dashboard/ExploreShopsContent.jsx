@@ -117,13 +117,13 @@ function OrderReceipt({ cart, shopName, onClose, onConfirmOrder }) {
                                 <span className="receipt-item-name">{item.itemName}</span>
                                 <span className="receipt-item-quantity">× {item.quantity}</span>
                             </div>
-                            <span className="receipt-item-price">₹{(item.price * item.quantity).toFixed(2)}</span>
+                            <span className="receipt-item-price">Rs {(item.price * item.quantity).toFixed(2)}</span>
                         </div>
                     ))}
                 </div>
                 
                 <div className="receipt-total">
-                    <strong>Total: ₹{total.toFixed(2)}</strong>
+                    <strong>Total:Rs {total.toFixed(2)}</strong>
                 </div>
                 
                 <div className="receipt-actions">
@@ -155,7 +155,7 @@ function MenuItem({ item, onUpdateCart, cartQuantity }) {
                 <h4 className="menu-item-name">{item.itemName}</h4>
                 <p className="menu-item-description">{item.description || 'No description available'}</p>
                 <div className="menu-item-details">
-                    <span className="menu-item-price">₹{item.price}</span>
+                    <span className="menu-item-price">Rs {item.price}</span>
                     <span className="menu-item-category">{item.category}</span>
                     {!item.availability && <span className="menu-item-unavailable">Unavailable</span>}
                 </div>
@@ -316,6 +316,31 @@ function ShopCard({ shop, onFavoriteUpdate }) {
         }
     };
 
+    const handleAddToCart = () => {
+    const userId = getCurrentUserId();
+    if (!userId) {
+        alert("Please log in to add to cart.");
+        return;
+    }
+
+    const cartKey = `cart_${userId}`;
+    const existingCart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+    const updatedCart = [...existingCart];
+
+    cart.forEach(item => {
+        const index = updatedCart.findIndex(ci => ci._id === item._id);
+        if (index > -1) {
+            updatedCart[index].quantity += item.quantity;
+        } else {
+            updatedCart.push({ ...item });
+        }
+    });
+
+    localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+    alert("Items added to your cart!");
+};
+
     const handleConfirmOrder = () => {
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         alert(`Order confirmed for ${shop.name}!\nTotal: ₹${total.toFixed(2)}\nItems: ${cart.length}`);
@@ -413,17 +438,24 @@ function ShopCard({ shop, onFavoriteUpdate }) {
                                         ))}
                                     </div>
                                     
+               
                                     {cart.length > 0 && (
-                                        <div className="menu-footer">
-                                            <button 
-                                                onClick={handleOrderClick}
-                                                className="order-summary-btn"
-                                            >
-                                                <ShoppingCart size={16} />
-                                                View Order ({cartItemCount} items)
-                                            </button>
-                                        </div>
-                                    )}
+    <>
+        <div className="menu-footer">
+            <button onClick={handleOrderClick} className="order-summary-btn">
+                <ShoppingCart size={16} />
+                View Order ({cartItemCount} items)
+            </button>
+        </div>
+
+        <div className="menu-footer">
+            <button onClick={handleAddToCart} className="order-summary-btn" style={{ backgroundColor: '#10b981' }}>
+                <i className="fa-solid fa-cart-plus"></i> Add to Cart
+            </button>
+        </div>
+    </>
+)}
+
                                 </>
                             ) : (
                                 <p className="no-menu-items">No menu items available</p>

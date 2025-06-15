@@ -3404,3 +3404,158 @@
     color: #ccc;
     margin-bottom: 1rem;
 }
+
+.buyer-notification-item {
+  display: flex;
+  background-color: white;
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+}
+
+.buyer-notification-item.unread {
+  background-color: #f0f9ff;
+}
+
+.buyer-notification-item.unread .buyer-notification-title {
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.buyer-notification-item.unread .buyer-notification-message {
+  font-weight: 500;
+}
+
+.buyer-unread-indicator {
+  width: 10px;
+  height: 10px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+.buyer-notification-filters {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0 20px;
+  }
+  
+  .buyer-notification-filters button {
+    background: #f3f4f6;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .buyer-notification-filters button:hover {
+    background: #e5e7eb;
+  }
+  
+  .buyer-notification-filters button.active {
+    background: #2563eb;
+    color: white;
+  }
+
+  /* Filter buttons */
+.buyer-notifications-filter {
+    margin-bottom: 20px;
+  }
+  
+  .buyer-filter-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .buyer-filter-btn {
+    padding: 8px 16px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .buyer-filter-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  
+  .buyer-filter-btn:hover {
+    border-color: #3b82f6;
+  }
+  
+  /* Status badges */
+  .notification-status-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 8px;
+  }
+  
+  .notification-status-badge.unread {
+    background: #fef3c7;
+    color: #d97706;
+  }
+  
+  .notification-status-badge.read {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  
+  /* Summary footer */
+  .buyer-notifications-summary {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .buyer-summary-stats {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .buyer-stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .buyer-stat.unread {
+    color: #d97706;
+  }
+  
+  .buyer-stat.read {
+    color: #16a34a;
+  }
+  
+  /* Empty filtered state */
+  .buyer-empty-filtered-notifications {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+  }
+  
+  .buyer-empty-filter-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  .buyer-filter-indicator {
+    font-style: italic;
+    color: #6b7280;
+  }

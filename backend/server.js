@@ -29,6 +29,7 @@ app.use('/api/menu', require('./routes/menu')); // ✅ Added this line for menu 
 app.use('/api/shops', require('./routes/shops')); // ✅ Added shops route
 // app.use('/api/orders', require('./routes/orders'));
 app.use('/api/orders', require('./routes/orders'));
+app.use("/api/notifications", require('./routes/notificationRoutes'));
 
 
 // Health check route

@@ -3,6 +3,7 @@ const router = express.Router();
 const Order = require('../models/Order');
 const MenuItem = require('../models/Menu');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const { authenticate } = require('../middleware/auth');
 
 // @route   POST /api/orders
@@ -168,7 +169,7 @@ router.get('/seller', authenticate, async (req, res) => {
 });
 
 // @route   PATCH /api/orders/:orderId
-// @desc    Update order status
+// @desc    Update order status and send notification
 // @access  Private (seller only)
 router.patch('/:orderId', authenticate, async (req, res) => {
   try {
@@ -184,7 +185,9 @@ router.patch('/:orderId', authenticate, async (req, res) => {
     }
 
     // Find order, must belong to this seller
-    const order = await Order.findOne({ _id: orderId, seller: req.user.id });
+    const order = await Order.findOne({ _id: orderId, seller: req.user.id })
+      .populate('buyer', 'name email')
+      .populate('seller', 'businessName');
 
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
@@ -192,6 +195,36 @@ router.patch('/:orderId', authenticate, async (req, res) => {
 
     order.status = status;
     await order.save();
+
+    // Send Notification to Buyer if status is confirmed or delivered
+    let title = '', message = '', icon = '', iconColor = '', actionButton = '';
+
+    if (status === 'confirmed') {
+      title = 'Order Accepted';
+      message = `Your order #${order.orderNumber || order._id.toString().slice(-6)} has been accepted by ${order.seller.businessName || 'the seller'}.`;
+      icon = 'fa-check-circle';
+      iconColor = '#10b981';
+      actionButton = 'Track Order';
+    } else if (status === 'delivered') {
+      title = 'Order Delivered';
+      message = `Your order #${order.orderNumber || order._id.toString().slice(-6)} has been delivered.`;
+      icon = 'fa-box';
+      iconColor = '#f59e0b';
+      actionButton = 'Rate Order';
+    }
+
+    if (title) {
+      await Notification.create({
+        userId: order.buyer._id,
+        title,
+        message,
+        type: 'order',
+        icon,
+        iconColor,
+        actionButton,
+        isRead: false,
+      });
+    }
 
     res.json({
       success: true,

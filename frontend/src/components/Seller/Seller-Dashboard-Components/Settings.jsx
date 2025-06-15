@@ -1,233 +1,233 @@
-import React, { useState } from "react";
-import './Settings.css';
+import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
+import authService from '../../../services/authService';
 
-function Settings() {
+function UserSettings() {
+  const [form, setForm] = useState({ name: '', email: '' });
+  const [tempForm, setTempForm] = useState({ name: '', email: '' });
+  const [editMode, setEditMode] = useState(false);
+  const [passwordMode, setPasswordMode] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
 
-     
+  const fetchUserData = async () => {
+    try {
+      const res = await authService.getProfile();
+      setForm(res.data.user || {});
+      setTempForm(res.data.user || {});
+    } catch (err) {
+      Swal.fire('Error', 'Failed to fetch user profile', 'error');
+    }
+  };
 
-    return (
-        <div id="settings">
-      <div className="header">
-        <h1>Settings</h1>
-        <p>Manage your shop preferences and account settings</p>
-      </div>
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
-      <div className="settings-card">
-        <h3>Shop Information</h3>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="shopName">Shop Name:</label>
-            <input
-              type="text"
-              id="shopName"
-              defaultValue="Green Garden Restaurant"
-            />
+  const handleChange = (field, value) => {
+    setTempForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handlePasswordChange = (field, value) => {
+    setPasswordForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const validateEmail = email =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleSave = async () => {
+    if (!tempForm.name.trim() || !tempForm.email.trim()) {
+      return Swal.fire('Validation Error', 'Name and email are required.', 'warning');
+    }
+
+    if (!validateEmail(tempForm.email)) {
+      return Swal.fire('Validation Error', 'Invalid email format.', 'warning');
+    }
+
+    try {
+      const res = await authService.updateProfile({
+        name: tempForm.name,
+        email: tempForm.email,
+      });
+      setForm(res.data.user);
+      setTempForm(res.data.user);
+      setEditMode(false);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Profile Updated!',
+        text: 'Your account information was updated successfully.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      Swal.fire('Error', 'Failed to update profile', 'error');
+    }
+  };
+
+  const handlePasswordSubmit = async () => {
+    const { currentPassword, newPassword, confirmPassword } = passwordForm;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return Swal.fire('Validation Error', 'All password fields are required.', 'warning');
+    }
+
+    if (newPassword !== confirmPassword) {
+      return Swal.fire('Mismatch', 'New password and confirmation do not match.', 'warning');
+    }
+
+    try {
+      await authService.changePassword({ currentPassword, newPassword });
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Password Changed!',
+        text: 'Your password has been updated successfully.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setPasswordMode(false);
+    } catch (err) {
+      Swal.fire('Error', err.message || 'Password change failed.', 'error');
+    }
+  };
+
+  return (
+    <div style={styles.wrapper}>
+      <h1 style={styles.heading}>Settings</h1>
+      <div style={styles.card}>
+        {editMode ? (
+          <>
+            <div style={styles.row}>
+              <label>Name:</label>
+              <input
+                type="text"
+                value={tempForm.name}
+                onChange={e => handleChange('name', e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.row}>
+              <label>Email:</label>
+              <input
+                type="email"
+                value={tempForm.email}
+                onChange={e => handleChange('email', e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.buttonGroup}>
+              <button style={styles.button} onClick={handleSave}>Save</button>
+              <button style={styles.button} onClick={() => setEditMode(false)}>Cancel</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={styles.row}><label>Name:</label><span>{form.name}</span></div>
+            <div style={styles.row}><label>Email:</label><span>{form.email}</span></div>
+            <div style={styles.row}><label>Password:</label><span>********</span></div>
+            <div style={styles.buttonGroup}>
+              <button style={styles.button} onClick={() => setEditMode(true)}>Edit Info</button>
+              <button style={styles.button} onClick={() => setPasswordMode(!passwordMode)}>Change Password</button>
+            </div>
+          </>
+        )}
+
+        {passwordMode && (
+          <div style={styles.passwordSection}>
+            <h3 style={styles.subheading}>Change Password</h3>
+            <div style={styles.row}>
+              <label>Current Password:</label>
+              <input
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={e => handlePasswordChange('currentPassword', e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.row}>
+              <label>New Password:</label>
+              <input
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={e => handlePasswordChange('newPassword', e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.row}>
+              <label>Confirm Password:</label>
+              <input
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={e => handlePasswordChange('confirmPassword', e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.buttonGroup}>
+              <button style={styles.button} onClick={handlePasswordSubmit}>Update Password</button>
+              <button style={styles.button} onClick={() => setPasswordMode(false)}>Cancel</button>
+            </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="shopPhone">Contact Number:</label>
-            <input type="text" id="shopPhone" defaultValue="+92 321 1234567" />
-          </div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="shopAddress">Address:</label>
-          <textarea
-            id="shopAddress"
-            rows="2"
-            defaultValue="Shop #12, Food Street, F-10 Markaz, Islamabad"
-          ></textarea>
-        </div>
-        <div className="form-group">
-          <label htmlFor="shopDescription">Description:</label>
-          <textarea
-            id="shopDescription"
-            rows="3"
-            defaultValue="We serve authentic Pakistani cuisine with a modern twist. From biryanis to karahi, our menu has something for everyone."
-          ></textarea>
-        </div>
-        <button className="btn">Save Changes</button>
-      </div>
-
-      <div className="settings-card">
-        <h3>Delivery Settings</h3>
-        <div className="form-group">
-          <label htmlFor="deliveryRadius">Delivery Radius (km):</label>
-          <input type="number" id="deliveryRadius" defaultValue="10" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="deliveryFee">Delivery Fee (Rs):</label>
-          <input type="number" id="deliveryFee" defaultValue="100" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="minOrderValue">Minimum Order Value (Rs):</label>
-          <input type="number" id="minOrderValue" defaultValue="300" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="freeDelivery">Free Delivery on Orders Above:</label>
-          <input type="number" id="freeDelivery" defaultValue="1000" />
-        </div>
-        <div className="form-group">
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <label className="toggle-switch">
-              <input type="checkbox" id="deliveryStatus" defaultChecked />
-              <span className="toggle-slider"></span>
-            </label>
-            <span style={{ marginLeft: "10px", color: "var(--gray)" }}>
-              Delivery Service Active
-            </span>
-          </div>
-        </div>
-        <button className="btn">Save Delivery Settings</button>
-      </div>
-
-      <div className="settings-card">
-        <h3>Working Hours</h3>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th
-                style={{
-                  textAlign: "left",
-                  padding: "10px",
-                  borderBottom: "1px solid var(--border)",
-                }}
-              >
-                Day
-              </th>
-              <th
-                style={{
-                  textAlign: "left",
-                  padding: "10px",
-                  borderBottom: "1px solid var(--border)",
-                }}
-              >
-                Open Time
-              </th>
-              <th
-                style={{
-                  textAlign: "left",
-                  padding: "10px",
-                  borderBottom: "1px solid var(--border)",
-                }}
-              >
-                Close Time
-              </th>
-              <th
-                style={{
-                  textAlign: "left",
-                  padding: "10px",
-                  borderBottom: "1px solid var(--border)",
-                }}
-              >
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              { day: "Monday", open: "10:00", close: "22:00" },
-              { day: "Tuesday", open: "10:00", close: "22:00" },
-              { day: "Wednesday", open: "10:00", close: "22:00" },
-              { day: "Thursday", open: "10:00", close: "22:00" },
-              { day: "Friday", open: "10:00", close: "23:00" },
-              { day: "Saturday", open: "11:00", close: "23:00" },
-              { day: "Sunday", open: "11:00", close: "22:00" },
-            ].map((schedule) => (
-              <tr key={schedule.day}>
-                <td
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid var(--border)",
-                  }}
-                >
-                  {schedule.day}
-                </td>
-                <td
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid var(--border)",
-                  }}
-                >
-                  <input
-                    type="time"
-                    defaultValue={schedule.open}
-                    style={{ width: "120px" }}
-                  />
-                </td>
-                <td
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid var(--border)",
-                  }}
-                >
-                  <input
-                    type="time"
-                    defaultValue={schedule.close}
-                    style={{ width: "120px" }}
-                  />
-                </td>
-                <td
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid var(--border)",
-                  }}
-                >
-                  <label
-                    className="toggle-switch"
-                    style={{ transform: "scale(0.8)" }}
-                  >
-                    <input type="checkbox" defaultChecked />
-                    <span className="toggle-slider"></span>
-                  </label>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <button className="btn" style={{ marginTop: "15px" }}>
-          Save Working Hours
-        </button>
-      </div>
-
-      <div className="settings-card">
-        <h3>Account Settings</h3>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="accountEmail">Email Address:</label>
-            <input
-              type="email"
-              id="accountEmail"
-              defaultValue="contact@greengardenrestaurant.com"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="accountPhone">Phone Number:</label>
-            <input
-              type="text"
-              id="accountPhone"
-              defaultValue="+92 321 1234567"
-            />
-          </div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="accountPassword">Change Password:</label>
-          <input
-            type="password"
-            id="accountPassword"
-            placeholder="Enter new password"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="accountConfirmPassword">Confirm Password:</label>
-          <input
-            type="password"
-            id="accountConfirmPassword"
-            placeholder="Confirm new password"
-          />
-        </div>
-        <button className="btn">Update Account</button>
+        )}
       </div>
     </div>
-);
+  );
 }
 
-export default Settings;
+const styles = {
+  wrapper: {
+    maxWidth: '600px',
+    margin: '0 auto',
+    padding: '20px',
+  },
+  card: {
+    background: '#fff',
+    borderRadius: '12px',
+    boxShadow: '0 0 10px #e0e0e0',
+    padding: '25px',
+  },
+  heading: {
+    textAlign: 'center',
+    marginBottom: '20px',
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'green',
+  },
+  subheading: {
+    fontSize: '20px',
+    marginBottom: '10px',
+  },
+  row: {
+    marginBottom: '15px',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  input: {
+    padding: '8px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+  },
+  buttonGroup: {
+    display: 'flex',
+    gap: '10px',
+    marginTop: '10px',
+    flexWrap: 'wrap',
+  },
+  button: {
+    backgroundColor: '#faa500', // 🟠 Orange
+    color: '#fff',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  passwordSection: {
+    marginTop: '20px',
+  },
+};
+
+export default UserSettings;

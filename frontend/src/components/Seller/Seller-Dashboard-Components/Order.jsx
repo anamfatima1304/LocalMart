@@ -177,7 +177,11 @@ function Order() {
           )}
 
           {order.status === "delivered" && (
-            <button className="btn btn-outline" disabled>
+            <button
+              className="btn btn-outline"
+              style={{ backgroundColor: "#faa500", color: "white", cursor: "not-allowed" }}
+              disabled
+            >
               Completed
             </button>
           )}

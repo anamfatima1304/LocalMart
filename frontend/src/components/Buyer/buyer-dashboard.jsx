@@ -1,5 +1,4 @@
 import React from "react";
-import { Heart, Search, Filter, Star, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css"; // Import Font Awesome
 import TimePicker from "react-time-picker";
@@ -15,7 +14,7 @@ import DashboardContent from "./buyer-dashboard/DashboardContent";
 import authService from "../../services/authService"; // Add this import
 
 // Sidebar Component
-function Sidebar({ activeMenu, setActiveMenu, userName }) { // Add userName prop
+function Sidebar({ activeMenu, setActiveMenu, userName }) {
   const menuItems = [
     { name: "Dashboard", icon: "fa-tachometer-alt" },
     { name: "Explore Shops", icon: "fa-store" },
@@ -27,11 +26,32 @@ function Sidebar({ activeMenu, setActiveMenu, userName }) { // Add userName prop
 
   return (
     <aside className="buyer-sidebar">
-      <div className="buyer-sidebar-brand">
-        <span className="buyer-navbar-brand">
-        Welcome
-          {/* Welcome, {userName || 'User'}!  */}
-        </span>
+      <div
+        className="buyer-sidebar-brand"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "50px",
+          fontWeight: "bold",
+          marginBottom: "10px",
+          fontSize: "23px", // font size increased by 5px
+          textRendering: "optimizeLegibility",
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+          letterSpacing: "0.5px",
+          color: "#FAA500", // updated font color
+        }}
+      >
+        <i
+          className="fas fa-store"
+          style={{
+            marginRight: "6px",
+            fontSize: "23px",
+            color: "#FAA500",
+          }}
+        ></i>
+        <span style={{ fontSize: "23px", color: "#FAA500" }}>LocalMart</span>
       </div>
       <ul className="buyer-sidebar-menu">
         {menuItems.map((item, index) => (
@@ -118,9 +138,9 @@ function BuyerDashboard() {
           setUserName(currentUser.name);
         }
       } catch (error) {
-        console.error('Error fetching user name:', error);
+        console.error("Error fetching user name:", error);
         // Fallback to localStorage if API call fails
-        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
         if (storedUser && storedUser.name) {
           setUserName(storedUser.name);
         }
@@ -146,7 +166,7 @@ function BuyerDashboard() {
         return <FavoriteSection />;
       case "Dashboard":
       default:
-        return <DashboardContent userName={userName} />; {/* Pass userName to DashboardContent */}
+        return <DashboardContent userName={userName} />; // Pass userName to DashboardContent
     }
   };
 
@@ -154,14 +174,16 @@ function BuyerDashboard() {
   if (loading) {
     return (
       <div className="buyer-app-container">
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '100vh',
-          fontSize: '18px',
-          color: '#666'
-        }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            fontSize: "18px",
+            color: "#666",
+          }}
+        >
           Loading...
         </div>
       </div>
@@ -171,9 +193,9 @@ function BuyerDashboard() {
   return (
     <div className="buyer-app-container">
       <div className="buyer-main-container">
-        <Sidebar 
-          activeMenu={activeMenu} 
-          setActiveMenu={setActiveMenu} 
+        <Sidebar
+          activeMenu={activeMenu}
+          setActiveMenu={setActiveMenu}
           userName={userName} // Pass username to Sidebar
         />
         <div className="buyer-content-area">{renderContent()}</div>

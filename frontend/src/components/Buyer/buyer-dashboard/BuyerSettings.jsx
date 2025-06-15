@@ -149,8 +149,20 @@ function BuyerSettings() {
             <div className="buyer-settings-row"><label>Email:</label><span>{form.email}</span></div>
             <div className="buyer-settings-row"><label>Password:</label><span>********</span></div>
 
-            <button className="buyer-btn-edit" onClick={() => setEditMode(true)}>Edit Info</button>
-            <button className="buyer-btn-edit" onClick={() => setPasswordMode(!passwordMode)}>Change Password</button>
+           <button
+  className="buyer-btn-edit"
+  onClick={() => setEditMode(true)}
+  style={{ marginRight: "10px" }}
+>
+  Edit Info
+</button>
+<button
+  className="buyer-btn-edit"
+  onClick={() => setPasswordMode(!passwordMode)}
+>
+  Change Password
+</button>
+
           </>
         )}
 

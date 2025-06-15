@@ -98,7 +98,11 @@ function UserSettings() {
 
   return (
     <div style={styles.wrapper}>
-      <h1 style={styles.heading}>Settings</h1>
+      <div style={styles.header}>
+        <h1 style={styles.heading}>Account Settings</h1>
+        <p style={styles.subtitle}>Manage your account information and password</p>
+      </div>
+
       <div style={styles.card}>
         {editMode ? (
           <>
@@ -184,18 +188,24 @@ const styles = {
     margin: '0 auto',
     padding: '20px',
   },
+  header: {
+    textAlign: 'center',
+    marginBottom: '20px',
+  },
+  heading: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#48bb78', // ✅ Updated green color
+  },
+  subtitle: {
+    fontSize: '16px',
+    color: '#555',
+  },
   card: {
     background: '#fff',
     borderRadius: '12px',
     boxShadow: '0 0 10px #e0e0e0',
     padding: '25px',
-  },
-  heading: {
-    textAlign: 'center',
-    marginBottom: '20px',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: 'green',
   },
   subheading: {
     fontSize: '20px',
@@ -218,7 +228,7 @@ const styles = {
     flexWrap: 'wrap',
   },
   button: {
-    backgroundColor: '#faa500', // 🟠 Orange
+    backgroundColor: '#faa500',
     color: '#fff',
     border: 'none',
     padding: '8px 16px',

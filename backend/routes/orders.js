@@ -3,7 +3,7 @@ const router = express.Router();
 const Order = require('../models/Order');
 const MenuItem = require('../models/Menu');
 const User = require('../models/User');
-const { authenticate } = require('../middleware/auth'); // ✅ fixed
+const { authenticate } = require('../middleware/auth');
 
 // @route   POST /api/orders
 // @desc    Create a new order
@@ -122,7 +122,7 @@ router.get('/buyer', authenticate, async (req, res) => {
 });
 
 // @route   GET /api/orders/seller
-// @desc    Get seller's orders
+// @desc    Get seller's orders, optionally filtered by status
 // @access  Private (sellers only)
 router.get('/seller', authenticate, async (req, res) => {
   try {
@@ -133,7 +133,22 @@ router.get('/seller', authenticate, async (req, res) => {
       });
     }
 
-    const orders = await Order.find({ seller: req.user.id })
+    const { status } = req.query;
+
+    const query = { seller: req.user.id };
+
+    if (status) {
+      const validStatuses = ['pending', 'confirmed', 'delivered'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid status filter. Must be one of: ${validStatuses.join(', ')}`
+        });
+      }
+      query.status = status;
+    }
+
+    const orders = await Order.find(query)
       .populate('buyer', 'name email phoneNumber')
       .sort({ createdAt: -1 });
 
@@ -149,6 +164,44 @@ router.get('/seller', authenticate, async (req, res) => {
       message: 'Error fetching orders',
       error: error.message
     });
+  }
+});
+
+// @route   PATCH /api/orders/:orderId
+// @desc    Update order status
+// @access  Private (seller only)
+router.patch('/:orderId', authenticate, async (req, res) => {
+  try {
+    if (req.user.userType !== 'seller') {
+      return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    if (!['pending', 'confirmed', 'delivered'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status value' });
+    }
+
+    // Find order, must belong to this seller
+    const order = await Order.findOne({ _id: orderId, seller: req.user.id });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    order.status = status;
+    await order.save();
+
+    res.json({
+      success: true,
+      message: `Order status updated to ${status}`,
+      data: order
+    });
+
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 

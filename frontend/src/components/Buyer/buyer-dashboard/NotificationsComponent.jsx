@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import '../buyer.css';
+import React, { useEffect, useState } from "react";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "../buyer.css";
 
 function NotificationsComponent() {
   const [notifications, setNotifications] = useState([]);
@@ -8,20 +8,23 @@ function NotificationsComponent() {
   const [error, setError] = useState(null);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-  const [filter, setFilter] = useState('all'); // 'all', 'read', 'unread'
+  const [filter, setFilter] = useState("all"); // 'all', 'read', 'unread'
 
   useEffect(() => {
     async function fetchNotifications() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:5000/api/notifications', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (!response.ok) throw new Error('Failed to fetch notifications');
+        const response = await fetch(
+          "http://localhost:5000/api/notifications",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) throw new Error("Failed to fetch notifications");
         const result = await response.json();
         setNotifications(result.data);
       } catch (err) {
@@ -35,42 +38,55 @@ function NotificationsComponent() {
 
   const handleMarkAsRead = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) throw new Error('Failed to mark as read');
-      setNotifications(prev => prev.map(n => (n._id === id ? { ...n, isRead: true } : n)));
+      const response = await fetch(
+        `http://localhost:5000/api/notifications/${id}/read`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to mark as read");
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+      );
     } catch (err) {
       alert(err.message);
     }
   };
 
   const handleMarkAllAsRead = async () => {
-    const unreadNotifications = notifications.filter(n => !n.isRead);
+    const unreadNotifications = notifications.filter((n) => !n.isRead);
     if (unreadNotifications.length === 0) {
-      alert('No unread notifications to mark as read');
+      alert("No unread notifications to mark as read");
       return;
     }
 
-    if (!window.confirm(`Mark ${unreadNotifications.length} notifications as read?`)) return;
+    if (
+      !window.confirm(
+        `Mark ${unreadNotifications.length} notifications as read?`
+      )
+    )
+      return;
 
     try {
-      const response = await fetch('http://localhost:5000/api/notifications/read-all', {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) throw new Error('Failed to mark all as read');
-      
+      const response = await fetch(
+        "http://localhost:5000/api/notifications/read-all",
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to mark all as read");
+
       // Update all notifications to read status
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-      alert('All notifications marked as read successfully!');
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      alert("All notifications marked as read successfully!");
     } catch (err) {
       alert(`Error: ${err.message}`);
     }
@@ -78,22 +94,30 @@ function NotificationsComponent() {
 
   const handleDeleteSelected = async () => {
     if (selectedNotifications.length === 0) return;
-    if (!window.confirm(`Delete ${selectedNotifications.length} notifications?`)) return;
+    if (
+      !window.confirm(`Delete ${selectedNotifications.length} notifications?`)
+    )
+      return;
 
     try {
-      const response = await fetch('http://localhost:5000/api/notifications/delete-selected', {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ids: selectedNotifications }),
-      });
-      if (!response.ok) throw new Error('Failed to delete notifications');
-      setNotifications(prev => prev.filter(n => !selectedNotifications.includes(n._id)));
+      const response = await fetch(
+        "http://localhost:5000/api/notifications/delete-selected",
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ids: selectedNotifications }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete notifications");
+      setNotifications((prev) =>
+        prev.filter((n) => !selectedNotifications.includes(n._id))
+      );
       setSelectedNotifications([]);
       setSelectAll(false);
-      alert('Selected notifications deleted successfully!');
+      alert("Selected notifications deleted successfully!");
     } catch (err) {
       alert(`Error: ${err.message}`);
     }
@@ -104,24 +128,24 @@ function NotificationsComponent() {
     if (selectAll) {
       setSelectedNotifications([]);
     } else {
-      setSelectedNotifications(filteredNotifications.map(n => n._id));
+      setSelectedNotifications(filteredNotifications.map((n) => n._id));
     }
     setSelectAll(!selectAll);
   };
 
   const handleSelectNotification = (id) => {
-    setSelectedNotifications(prev =>
-      prev.includes(id) ? prev.filter(selId => selId !== id) : [...prev, id]
+    setSelectedNotifications((prev) =>
+      prev.includes(id) ? prev.filter((selId) => selId !== id) : [...prev, id]
     );
   };
 
   // Filter notifications based on read status
   const getFilteredNotifications = () => {
     switch (filter) {
-      case 'read':
-        return notifications.filter(n => n.isRead);
-      case 'unread':
-        return notifications.filter(n => !n.isRead);
+      case "read":
+        return notifications.filter((n) => n.isRead);
+      case "unread":
+        return notifications.filter((n) => !n.isRead);
       default:
         return notifications;
     }
@@ -130,17 +154,24 @@ function NotificationsComponent() {
   // Get counts for different notification states
   const getNotificationCounts = () => {
     const total = notifications.length;
-    const unread = notifications.filter(n => !n.isRead).length;
-    const read = notifications.filter(n => n.isRead).length;
+    const unread = notifications.filter((n) => !n.isRead).length;
+    const read = notifications.filter((n) => n.isRead).length;
     return { total, unread, read };
   };
 
   const NotificationItem = ({ notification }) => (
-    <div className={`buyer-notification-item ${!notification.isRead ? 'unread' : ''}`}>
+    <div
+      className={`buyer-notification-item ${
+        !notification.isRead ? "unread" : ""
+      }`}
+    >
       <div className="buyer-notification-icon-wrapper">
         <div
           className="buyer-notification-icon"
-          style={{ backgroundColor: notification.iconColor + '20', color: notification.iconColor }}
+          style={{
+            backgroundColor: notification.iconColor + "20",
+            color: notification.iconColor,
+          }}
         >
           <i className={`fa-solid ${notification.icon}`}></i>
         </div>
@@ -170,10 +201,15 @@ function NotificationsComponent() {
 
         <div className="buyer-notification-actions">
           <span className={`notification-type-badge ${notification.type}`}>
-            {notification.type.charAt(0).toUpperCase() + notification.type.slice(1)}
+            {notification.type.charAt(0).toUpperCase() +
+              notification.type.slice(1)}
           </span>
-          <span className={`notification-status-badge ${notification.isRead ? 'read' : 'unread'}`}>
-            {notification.isRead ? 'Read' : 'Unread'}
+          <span
+            className={`notification-status-badge ${
+              notification.isRead ? "read" : "unread"
+            }`}
+          >
+            {notification.isRead ? "Read" : "Unread"}
           </span>
         </div>
       </div>
@@ -204,24 +240,30 @@ function NotificationsComponent() {
           <h1 className="buyer-notifications-title">Notifications</h1>
           <p className="buyer-notifications-subtitle">
             {counts.unread > 0
-              ? `${counts.unread} unread notification${counts.unread > 1 ? 's' : ''}`
-              : 'All caught up!'}
+              ? `${counts.unread} unread notification${
+                  counts.unread > 1 ? "s" : ""
+                }`
+              : "All caught up!"}
           </p>
         </div>
         <div className="buyer-notifications-actions">
           {counts.unread > 0 && (
-            <button 
-              className="buyer-mark-all-read-btn" 
+            <button
+              className="buyer-mark-all-read-btn"
               onClick={handleMarkAllAsRead}
               title={`Mark ${counts.unread} notifications as read`}
             >
-              <i className="fa-solid fa-check-double"></i> 
+              <i className="fa-solid fa-check-double"></i>
               Mark all as read ({counts.unread})
             </button>
           )}
           {selectedNotifications.length > 0 && (
-            <button className="buyer-delete-selected-btn" onClick={handleDeleteSelected}>
-              <i className="fa-solid fa-trash"></i> Delete ({selectedNotifications.length})
+            <button
+              className="buyer-delete-selected-btn"
+              onClick={handleDeleteSelected}
+            >
+              <i className="fa-solid fa-trash"></i> Delete (
+              {selectedNotifications.length})
             </button>
           )}
         </div>
@@ -327,37 +369,39 @@ function NotificationsComponent() {
         `}</style>
         <div className="buyer-filter-buttons">
           <button
-            className={`buyer-filter-btn ${filter === 'all' ? 'active' : ''}`}
+            className={`buyer-filter-btn ${filter === "all" ? "active" : ""}`}
             onClick={() => {
-              setFilter('all');
+              setFilter("all");
               setSelectedNotifications([]);
               setSelectAll(false);
             }}
           >
             <i className="fa-solid fa-list"></i>
-            All ({counts.total})
+            &nbsp;&nbsp;All ({counts.total})
           </button>
           <button
-            className={`buyer-filter-btn ${filter === 'unread' ? 'active' : ''}`}
+            className={`buyer-filter-btn ${
+              filter === "unread" ? "active" : ""
+            }`}
             onClick={() => {
-              setFilter('unread');
+              setFilter("unread");
               setSelectedNotifications([]);
               setSelectAll(false);
             }}
           >
             <i className="fa-solid fa-envelope"></i>
-            Unread ({counts.unread})
+            &nbsp;&nbsp;Unread ({counts.unread})
           </button>
           <button
-            className={`buyer-filter-btn ${filter === 'read' ? 'active' : ''}`}
+            className={`buyer-filter-btn ${filter === "read" ? "active" : ""}`}
             onClick={() => {
-              setFilter('read');
+              setFilter("read");
               setSelectedNotifications([]);
               setSelectAll(false);
             }}
           >
             <i className="fa-solid fa-envelope-open"></i>
-            Read ({counts.read})
+            &nbsp;&nbsp;Read ({counts.read})
           </button>
         </div>
       </div>
@@ -372,12 +416,14 @@ function NotificationsComponent() {
               onChange={handleSelectAll}
               className="buyer-select-all-checkbox"
             />
-            <span>Select all ({filteredNotifications.length})</span>
+            <span className="buyer-select-all-label">
+              Select all ({filteredNotifications.length})
+            </span>
           </label>
         </div>
         <div className="buyer-notifications-count">
           Showing {filteredNotifications.length} of {counts.total} notifications
-          {filter !== 'all' && (
+          {filter !== "all" && (
             <span className="buyer-filter-indicator">
               • Filtered by {filter}
             </span>
@@ -391,14 +437,14 @@ function NotificationsComponent() {
           <i className="fa-solid fa-filter buyer-empty-filter-icon"></i>
           <h3>No {filter} notifications</h3>
           <p>
-            {filter === 'unread' 
-              ? "You don't have any unread notifications." 
+            {filter === "unread"
+              ? "You don't have any unread notifications."
               : "You don't have any read notifications."}
           </p>
         </div>
       ) : (
         <div className="buyer-notifications-list">
-          {filteredNotifications.map(notification => (
+          {filteredNotifications.map((notification) => (
             <div key={notification._id} className="buyer-notification-wrapper">
               <label className="buyer-notification-checkbox-wrapper">
                 <input
@@ -413,7 +459,7 @@ function NotificationsComponent() {
           ))}
         </div>
       )}
-      
+
       {/* Summary Footer */}
       <div className="buyer-notifications-summary">
         <div className="buyer-summary-stats">

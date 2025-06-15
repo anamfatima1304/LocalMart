@@ -3559,3 +3559,16 @@
     font-style: italic;
     color: #6b7280;
   }
+
+  .buyer-select-all-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* spacing between checkbox and text */
+    font-size: 14px;
+  }
+  
+  .buyer-select-all-checkbox {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+  }

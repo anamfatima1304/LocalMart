@@ -348,29 +348,34 @@ function ShopCard({ shop, onFavoriteUpdate }) {
     };
 
     const handleAddToCart = () => {
-    const userId = getCurrentUserId();
-    if (!userId) {
-        alert("Please log in to add to cart.");
-        return;
-    }
-
-    const cartKey = `cart_${userId}`;
-    const existingCart = JSON.parse(localStorage.getItem(cartKey)) || [];
-
-    const updatedCart = [...existingCart];
-
-    cart.forEach(item => {
-        const index = updatedCart.findIndex(ci => ci._id === item._id);
-        if (index > -1) {
-            updatedCart[index].quantity += item.quantity;
-        } else {
-            updatedCart.push({ ...item });
+        const userId = getCurrentUserId();
+        console.log(shop.id);
+        if (!userId) {
+            alert("Please log in to add to cart.");
+            return;
         }
-    });
-
-    localStorage.setItem(cartKey, JSON.stringify(updatedCart));
-    alert("Items added to your cart!");
-};
+    
+        const cartKey = `cart_${userId}`;
+        const existingCart = JSON.parse(localStorage.getItem(cartKey)) || [];
+    
+        const updatedCart = [...existingCart];
+    
+        cart.forEach(item => {
+            const index = updatedCart.findIndex(ci => ci._id === item._id);
+            if (index > -1) {
+                updatedCart[index].quantity += item.quantity;
+            } else {
+                // Add shop.id to each item when adding to cart
+                updatedCart.push({ 
+                    ...item, 
+                    shopId: shop.id 
+                });
+            }
+        });
+    
+        localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+        alert("Items added to your cart!");
+    };
 
     const handleConfirmOrder = async () => {
         const token = localStorage.getItem('token'); // Your JWT token
@@ -403,7 +408,7 @@ function ShopCard({ shop, onFavoriteUpdate }) {
       
           const data = await res.json();
           if (data.success) {
-            alert("Order stored successfully!");
+            alert("Order placed successfully!");
             console.log("Order:", data.data);
           } else {
             alert("Failed: " + data.message);

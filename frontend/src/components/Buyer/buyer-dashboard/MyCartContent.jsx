@@ -239,7 +239,7 @@ function MyCartContent() {
         }
 
         const orderData = {
-            sellerId: shop.id,
+            sellerId: item.shopId,
             items: [{
                 menuItemId: item._id,
                 quantity: item.quantity
@@ -261,7 +261,7 @@ function MyCartContent() {
 
           const data = await res.json();
           if (data.success) {
-            alert("Order stored successfully!");
+            alert("Order placed successfully!");
             console.log("Order:", data.data);
           } else {
             alert("Failed: " + data.message);

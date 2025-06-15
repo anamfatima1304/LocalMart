@@ -365,11 +365,10 @@ function ShopCard({ shop, onFavoriteUpdate }) {
             if (index > -1) {
                 updatedCart[index].quantity += item.quantity;
             } else {
-                // Add shop.id to each item when adding to cart
+                // Add shop.id as sellerId to each item when adding to cart
                 updatedCart.push({ 
                     ...item, 
-                    shopId: shop.id,  // This will be accessible as item.shopId in cart
-                    shopName: shop.name || shop.shopName  // Also add shop name for display
+                    sellerId: shop.id  // This will be accessible as item.sellerId in cart
                 });
             }
         });

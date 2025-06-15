@@ -239,7 +239,7 @@ function MyCartContent() {
         }
 
         const orderData = {
-            sellerId: item.shopId,
+            sellerId: item.sellerId,
             items: [{
                 menuItemId: item._id,
                 quantity: item.quantity

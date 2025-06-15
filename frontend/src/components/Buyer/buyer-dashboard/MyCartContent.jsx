@@ -286,7 +286,7 @@ function MyCartContent() {
                     <i className="fa-solid fa-shopping-cart buyer-empty-cart-icon"></i>
                     <h3>Your cart is empty</h3>
                     <p>Add some items to get started!</p>
-                    <button className="buyer-continue-shopping-btn" onClick={() => window.history.back()}>Continue Shopping</button>
+                    {/* <button className="buyer-continue-shopping-btn" onClick={() => window.history.back()}>Continue Shopping</button> */}
                 </div>
             </div>
         );
@@ -300,10 +300,10 @@ function MyCartContent() {
                     <p className="buyer-cart-subtitle">{cartItemsState.length} items in your cart</p>
                 </div>
                 <div className="buyer-cart-actions">
-                    <button className="buyer-continue-shopping-btn-outline" onClick={() => window.history.back()}>
+                    {/* <button className="buyer-continue-shopping-btn-outline" onClick={() => window.history.back()}>
                         <i className="fa-solid fa-arrow-left"></i>
                         Continue Shopping
-                    </button>
+                    </button> */}
                     {cartItemsState.length > 0 && (
                         <button className="buyer-clear-cart-btn" onClick={handleClearCart}>
                             <i className="fa-solid fa-trash"></i>

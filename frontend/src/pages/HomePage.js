@@ -80,70 +80,67 @@ function HomePage() {
               <img src="https://images.unsplash.com/photo-1528556860752-2a6a19a285a3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8anVpY2V8ZW58MHx8MHx8fDA%3D" alt="Pizza" />
               <div className="food-card-overlay">
                 <h4>Fresh Pizza</h4>
-                <p>Rs 1200</p>
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&auto=format&fit=crop&q=60" alt="Salad" />
               <div className="food-card-overlay">
                 <h4>Garden Salad</h4>
-                <p>Rs 200</p>
+                
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=300&auto=format&fit=crop&q=60" alt="Burger" />
               <div className="food-card-overlay">
                 <h4>Juicy Burger</h4>
-                <p>Rs 500</p>
+                
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=300&auto=format&fit=crop&q=60" alt="Tacos" />
               <div className="food-card-overlay">
                 <h4>Ice-Cream</h4>
-                <p>Rs 250</p>
+        
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?w=300&auto=format&fit=crop&q=60" alt="Smoothie" />
               <div className="food-card-overlay">
                 <h4>Berry Smoothie</h4>
-                <p>Rs 100</p>
+             
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&auto=format&fit=crop&q=60" alt="Pancakes" />
               <div className="food-card-overlay">
                 <h4>Fluffy Pancakes</h4>
-                <p>Rs 800</p>
+            
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=300&auto=format&fit=crop&q=60" alt="Pasta" />
               <div className="food-card-overlay">
                 <h4>Creamy Pasta</h4>
-                <p>Rs 1200</p>
+           
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&auto=format&fit=crop&q=60" alt="Ice Cream" />
               <div className="food-card-overlay">
                 <h4>Vanilla Ice Cream</h4>
-                <p>Rs 550</p>
+                
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&auto=format&fit=crop&q=60" alt="Sushi" />
               <div className="food-card-overlay">
                 <h4>Tea</h4>
-                <p>Rs 80</p>
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=300&auto=format&fit=crop&q=60" alt="Cake" />
               <div className="food-card-overlay">
                 <h4>Chocolate Cake</h4>
-                <p>Rs 1000</p>
               </div>
             </div>
             
@@ -152,21 +149,18 @@ function HomePage() {
               <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGl6emF8ZW58MHx8MHx8fDA%3D" alt="Pizza" />
               <div className="food-card-overlay">
                 <h4>Fresh Pizza</h4>
-                <p>Rs 1500</p>
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&auto=format&fit=crop&q=60" alt="Salad" />
               <div className="food-card-overlay">
                 <h4>Garden Salad</h4>
-                <p>Rs 200</p>
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=300&auto=format&fit=crop&q=60" alt="Burger" />
               <div className="food-card-overlay">
                 <h4>Juicy Burger</h4>
-                <p>Rs 350</p>
               </div>
             </div>
             <div className="food-card">

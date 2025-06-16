@@ -21,13 +21,13 @@ function HomePage() {
     {
       title: "Shop Local, Save More",
       description: "Discover amazing deals from your neighborhood stores. Support local businesses while enjoying competitive prices and fresh products delivered straight to your door.",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0",
+      image: "https://media.istockphoto.com/id/2098517840/photo/grocery-shopping.webp?a=1&b=1&s=612x612&w=0&k=20&c=FTrThJd6_w0NkWZe0o6biF4aM4alef-lm7VVjpPk9Vo=",
       features: ["Best Local Prices", "Fresh Products", "Community Support"]
     },
     {
       title: "Lightning Fast Delivery",
       description: "Experience the fastest delivery in your area. Our network of local partners ensures your orders reach you within hours, not days. Track your delivery in real-time.",
-      image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0",
+      image: "https://media.istockphoto.com/id/2149058664/photo/hands-box-and-delivery-man-at-front-door-in-home-with-client-services-and-shipping-for.webp?a=1&b=1&s=612x612&w=0&k=20&c=6MkXJD-YjjBpdy1ejrVH-wRo7b8W0WUIuXToDCtJ7Wg=",
       features: ["Same-Day Delivery", "Real-Time Tracking", "Local Network"]
     },
     {
@@ -71,6 +71,157 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Continuous Scrolling Food Cards */}
+      <section className="food-showcase">
+        <div className="food-scroll-container">
+          <div className="food-scroll-track">
+            {/* First set of cards */}
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1528556860752-2a6a19a285a3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8anVpY2V8ZW58MHx8MHx8fDA%3D" alt="Pizza" />
+              <div className="food-card-overlay">
+                <h4>Fresh Pizza</h4>
+                <p>Rs 1200</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&auto=format&fit=crop&q=60" alt="Salad" />
+              <div className="food-card-overlay">
+                <h4>Garden Salad</h4>
+                <p>Rs 200</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=300&auto=format&fit=crop&q=60" alt="Burger" />
+              <div className="food-card-overlay">
+                <h4>Juicy Burger</h4>
+                <p>Rs 500</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=300&auto=format&fit=crop&q=60" alt="Tacos" />
+              <div className="food-card-overlay">
+                <h4>Ice-Cream</h4>
+                <p>Rs 250</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?w=300&auto=format&fit=crop&q=60" alt="Smoothie" />
+              <div className="food-card-overlay">
+                <h4>Berry Smoothie</h4>
+                <p>Rs 100</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&auto=format&fit=crop&q=60" alt="Pancakes" />
+              <div className="food-card-overlay">
+                <h4>Fluffy Pancakes</h4>
+                <p>Rs 800</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=300&auto=format&fit=crop&q=60" alt="Pasta" />
+              <div className="food-card-overlay">
+                <h4>Creamy Pasta</h4>
+                <p>Rs 1200</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&auto=format&fit=crop&q=60" alt="Ice Cream" />
+              <div className="food-card-overlay">
+                <h4>Vanilla Ice Cream</h4>
+                <p>Rs 550</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&auto=format&fit=crop&q=60" alt="Sushi" />
+              <div className="food-card-overlay">
+                <h4>Tea</h4>
+                <p>Rs 80</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=300&auto=format&fit=crop&q=60" alt="Cake" />
+              <div className="food-card-overlay">
+                <h4>Chocolate Cake</h4>
+                <p>Rs 1000</p>
+              </div>
+            </div>
+            
+            {/* Duplicate set for seamless loop */}
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGl6emF8ZW58MHx8MHx8fDA%3D" alt="Pizza" />
+              <div className="food-card-overlay">
+                <h4>Fresh Pizza</h4>
+                <p>Rs 1500</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1546793665-c74683f339c1?w=300&auto=format&fit=crop&q=60" alt="Salad" />
+              <div className="food-card-overlay">
+                <h4>Garden Salad</h4>
+                <p>Rs 200</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=300&auto=format&fit=crop&q=60" alt="Burger" />
+              <div className="food-card-overlay">
+                <h4>Juicy Burger</h4>
+                <p>Rs 350</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=300&auto=format&fit=crop&q=60" alt="Tacos" />
+              <div className="food-card-overlay">
+                <h4>Spicy Tacos</h4>
+                <p>$11.99</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?w=300&auto=format&fit=crop&q=60" alt="Smoothie" />
+              <div className="food-card-overlay">
+                <h4>Berry Smoothie</h4>
+                <p>$6.99</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&auto=format&fit=crop&q=60" alt="Pancakes" />
+              <div className="food-card-overlay">
+                <h4>Fluffy Pancakes</h4>
+                <p>$9.99</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=300&auto=format&fit=crop&q=60" alt="Pasta" />
+              <div className="food-card-overlay">
+                <h4>Creamy Pasta</h4>
+                <p>$13.99</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&auto=format&fit=crop&q=60" alt="Ice Cream" />
+              <div className="food-card-overlay">
+                <h4>Vanilla Ice Cream</h4>
+                <p>$4.99</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&auto=format&fit=crop&q=60" alt="Sushi" />
+              <div className="food-card-overlay">
+                <h4>Fresh Sushi</h4>
+                <p>$18.99</p>
+              </div>
+            </div>
+            <div className="food-card">
+              <img src="https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=300&auto=format&fit=crop&q=60" alt="Cake" />
+              <div className="food-card-overlay">
+                <h4>Chocolate Cake</h4>
+                <p>$7.99</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* New Attractive Benefits Section */}
       <section className="benefits-section">
         <div className="container">
@@ -88,7 +239,7 @@ function HomePage() {
                       </li>
                     ))}
                   </ul>
-                  <button className="learn-more-btn">Learn More</button>
+                  
                 </div>
                 <div className="benefit-image">
                   <img src={card.image} alt={card.title} />

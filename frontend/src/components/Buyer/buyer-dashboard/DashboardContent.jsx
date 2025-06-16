@@ -107,7 +107,7 @@ function DashboardContent() {
       {/* Header */}
       <div className="buyer-welcome-section">
         <div>
-          <h1 className="buyer-dashboard-title">Welcome back, {userName}!</h1>
+          <h1 className="buyer-dashboard-title">Welcome {userName}!</h1>
           <p className="buyer-dashboard-subtitle">Here's your current order activity.</p>
         </div>
       </div>

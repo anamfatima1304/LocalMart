@@ -330,14 +330,14 @@ footer {
   font-size: 20px;
 }
 .footer-section p, .footer-section ul li {
-  color: #ddd;
+  color: white;
   line-height: 1.6;
 }
 .footer-section ul {
   list-style: none;
 }
 .footer-section ul li a {
-  color: #ddd;
+  color: white;
   text-decoration: none;
   transition: color 0.3s ease;
 }

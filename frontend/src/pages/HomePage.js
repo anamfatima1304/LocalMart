@@ -106,7 +106,7 @@ function HomePage() {
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?w=300&auto=format&fit=crop&q=60" alt="Smoothie" />
               <div className="food-card-overlay">
-                <h4>Berry Smoothie</h4>
+                <h4>Orange Juice</h4>
              
               </div>
             </div>
@@ -120,14 +120,14 @@ function HomePage() {
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=300&auto=format&fit=crop&q=60" alt="Pasta" />
               <div className="food-card-overlay">
-                <h4>Creamy Pasta</h4>
+                <h4>Omellete</h4>
            
               </div>
             </div>
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&auto=format&fit=crop&q=60" alt="Ice Cream" />
               <div className="food-card-overlay">
-                <h4>Vanilla Ice Cream</h4>
+                <h4>Juice</h4>
                 
               </div>
             </div>
@@ -140,7 +140,7 @@ function HomePage() {
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=300&auto=format&fit=crop&q=60" alt="Cake" />
               <div className="food-card-overlay">
-                <h4>Chocolate Cake</h4>
+                <h4>Cherry</h4>
               </div>
             </div>
             
@@ -173,7 +173,7 @@ function HomePage() {
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?w=300&auto=format&fit=crop&q=60" alt="Smoothie" />
               <div className="food-card-overlay">
-                <h4>Berry Smoothie</h4>
+                <h4>Orange Juice</h4>
                 <p>$6.99</p>
               </div>
             </div>
@@ -187,7 +187,7 @@ function HomePage() {
             <div className="food-card">
               <img src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=300&auto=format&fit=crop&q=60" alt="Pasta" />
               <div className="food-card-overlay">
-                <h4>Creamy Pasta</h4>
+                <h4>Omellete</h4>
                 <p>$13.99</p>
               </div>
             </div>

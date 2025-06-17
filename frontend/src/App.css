@@ -561,3 +561,20 @@ footer {
   }
   
 }
+
+
+.nav-button {
+  background: none;     /* Remove button background */
+  border: none;         /* Remove border */
+  padding: 0;           /* Remove default padding */
+  margin: 0;            /* Optional: adjust margin if needed */
+  font-size: 1.1rem;    /* Increase font size (adjust as you like) */
+  color: inherit;       /* Keep the same color as surrounding text */
+  cursor: pointer;      /* Pointer cursor on hover */
+  font-family: inherit; /* Use same font as navbar */
+  color:white;
+}
+
+.nav-button:focus {
+  outline: none;        /* Remove focus outline */
+}

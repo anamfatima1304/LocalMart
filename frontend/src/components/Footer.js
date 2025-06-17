@@ -1,8 +1,26 @@
-// src/components/Footer.js
 import React from 'react';
-
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Footer() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollLink = (id) => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => scrollToSection(id), 100);
+    } else {
+      scrollToSection(id);
+    }
+  };
+
   return (
     <footer id="contact">
       <div className="footer-content">
@@ -17,8 +35,28 @@ function Footer() {
         <div className="footer-section">
           <h3>Quick Links</h3>
           <ul>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#audience">For Who</a></li>
+            <li>
+              <a
+                href="#features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleScrollLink('features');
+                }}
+              >
+                Features
+              </a>
+            </li>
+            <li>
+              <a
+                href="#audience"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleScrollLink('audience');
+                }}
+              >
+                For Who
+              </a>
+            </li>
             <li><a href="/login">Login</a></li>
             <li><a href="/signup">Sign Up</a></li>
           </ul>
@@ -28,7 +66,7 @@ function Footer() {
           <h3>Contact Us</h3>
           <ul>
             <li><i className="fas fa-map-marker-alt"></i> Namal University, Mianwali</li>
-            <li><i className="fas fa-phone"></i> +92 123 456 7890</li>
+            {/* <li><i className="fas fa-phone"></i> +92 123 456 7890</li> */}
             <li><i className="fas fa-envelope"></i> info@localmart.com</li>
           </ul>
 

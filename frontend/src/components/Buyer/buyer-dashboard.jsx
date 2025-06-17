@@ -80,7 +80,7 @@ function Sidebar({ activeMenu, setActiveMenu, userName }) {
             e.preventDefault();
             if (window.confirm("Are you sure you want to logout?")) {
               authService.logout(); // Use authService logout method
-              window.location.href = "/login";
+              window.location.href = "/";
             }
           }}
         >

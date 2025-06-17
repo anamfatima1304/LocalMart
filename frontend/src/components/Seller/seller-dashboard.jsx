@@ -219,7 +219,10 @@ const SellerDashboard = () => {
         ))}
         <a href="#" className="nav-link" onClick={(e) => {
           e.preventDefault();
-          if (window.confirm("Are you sure you want to logout?")) authService.logout();
+          if (window.confirm("Are you sure you want to logout?")) {
+                        authService.logout(); // Use authService logout method
+                        window.location.href = "/";
+                      }
         }}>
           <i className="fas fa-sign-out-alt"></i><span>Logout</span>
         </a>
